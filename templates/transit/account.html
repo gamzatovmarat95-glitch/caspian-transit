@@ -1,0 +1,9 @@
+{% extends 'transit/operations-base.html' %}{% load static %}{% block content %}
+<div class="access-layout">
+<div class="access-story"><span class="access-kicker">ЕДИНОЕ ОКНО ЛОГИСТА</span><h2>Каждая стыковка под контролем.</h2><p>Планирование, документы и события перевозки в одном рабочем пространстве.</p><img src="{% static 'brand/dispatch-harbor.svg' %}" alt="" aria-hidden="true"></div>
+<div class="account"><h1>{% if mode == 'register' %}Создать аккаунт{% else %}Добро пожаловать на борт{% endif %}</h1>
+<p>Отдельное пространство перевозок. Совместный доступ выдаёт владелец в разделе «Команда».</p>
+<form method="post" class="panel">{% csrf_token %}{{ form.as_p }}<button type="submit">{% if mode == 'register' %}Создать{% else %}Войти{% endif %}</button></form>
+<p><a href="/accounts/register">Регистрация</a> · <a href="/accounts/login">Вход</a> · <a href="/session/start">Локальный демостенд</a></p></div>
+</div>
+{% endblock %}

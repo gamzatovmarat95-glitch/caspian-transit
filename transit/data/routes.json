@@ -1,0 +1,190 @@
+[
+  {
+    "id": "olya-anzali",
+    "name": "Оля → Энзели",
+    "from": "olya",
+    "to": "anzali",
+    "inlandHours": 12,
+    "inlandKm": 620,
+    "inlandMode": "rail",
+    "seaHours": 34,
+    "seaKm": 1080,
+    "finalHours": 7,
+    "finalKm": 360,
+    "firstDeparture": 24,
+    "frequencyHours": 24,
+    "cutoffHours": 3,
+    "capacity": 4,
+    "costRub": 142000,
+    "geometry": [
+      [
+        48.71,
+        44.51
+      ],
+      [
+        47.3,
+        46.05
+      ],
+      [
+        45.79,
+        47.55
+      ],
+      [
+        45.35,
+        47.65
+      ],
+      [
+        44.763333,
+        47.76
+      ],
+      [
+        44.7,
+        48.3
+      ],
+      [
+        41.3,
+        49.3
+      ],
+      [
+        38.3,
+        49.6
+      ],
+      [
+        37.47,
+        49.47
+      ],
+      [
+        36.65,
+        50.35
+      ],
+      [
+        35.69,
+        51.39
+      ]
+    ]
+  },
+  {
+    "id": "makh-amirabad",
+    "name": "Махачкала → Амирабад",
+    "from": "makhachkala",
+    "to": "amirabad",
+    "inlandHours": 17,
+    "inlandKm": 860,
+    "inlandMode": "road",
+    "seaHours": 27,
+    "seaKm": 820,
+    "finalHours": 6,
+    "finalKm": 300,
+    "firstDeparture": 30,
+    "frequencyHours": 24,
+    "cutoffHours": 3,
+    "capacity": 3,
+    "costRub": 166000,
+    "geometry": [
+      [
+        48.71,
+        44.51
+      ],
+      [
+        46.31,
+        44.27
+      ],
+      [
+        44.18,
+        46.3
+      ],
+      [
+        42.98,
+        47.51
+      ],
+      [
+        41.4,
+        49.1
+      ],
+      [
+        39.1,
+        51.1
+      ],
+      [
+        37.1,
+        53.4
+      ],
+      [
+        36.85,
+        53.37
+      ],
+      [
+        36.1,
+        52.2
+      ],
+      [
+        35.69,
+        51.39
+      ]
+    ]
+  },
+  {
+    "id": "olya-amirabad",
+    "name": "Оля → Амирабад",
+    "from": "olya",
+    "to": "amirabad",
+    "inlandHours": 12,
+    "inlandKm": 620,
+    "inlandMode": "rail",
+    "seaHours": 42,
+    "seaKm": 1290,
+    "finalHours": 6,
+    "finalKm": 300,
+    "firstDeparture": 36,
+    "frequencyHours": 24,
+    "cutoffHours": 4,
+    "capacity": 5,
+    "costRub": 153000,
+    "geometry": [
+      [
+        48.71,
+        44.51
+      ],
+      [
+        47.3,
+        46.05
+      ],
+      [
+        45.79,
+        47.55
+      ],
+      [
+        45.35,
+        47.65
+      ],
+      [
+        44.763333,
+        47.76
+      ],
+      [
+        44.7,
+        48.3
+      ],
+      [
+        42.1,
+        50.5
+      ],
+      [
+        39.4,
+        52.4
+      ],
+      [
+        36.85,
+        53.37
+      ],
+      [
+        36.1,
+        52.2
+      ],
+      [
+        35.69,
+        51.39
+      ]
+    ]
+  }
+]

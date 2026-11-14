@@ -1,0 +1,274 @@
+/* Maritime theme: the original application behavior and brand mark are retained. */
+:root {
+  --ink: #193443;
+  --muted: #617b88;
+  --line: #d8e3e6;
+  --paper: #fff;
+  --bg: #edf3f4;
+  --graphite: #102c3b;
+  --teal: #26726e;
+  --teal-light: #e8f3ef;
+  --accent: #bd613c;
+  --amber: #a96724;
+  --red: #b14a42;
+  --radius: 10px;
+}
+body { background: var(--bg); }
+::selection { background: #d3e7ed; color: #15394b; }
+.sidebar {
+  width: 232px;
+  padding: 29px 15px 0;
+  border-right: 1px solid #244553;
+  background: #102c3b;
+  scrollbar-color: #496876 #102c3b;
+}
+.brand { padding-bottom: 28px; font-size: 27px; gap: 11px; }
+.brand > span > span { color: #94b0ba; font-size: 8px; letter-spacing: 2.8px; }
+.workspace-label { border-color: #ffffff12; color: #e1ebee; padding-block: 21px; }
+.workspace-icon { border-color: #486570; color: #d4a17e; border-radius: 7px; }
+.workspace-label small { color: #98b2bd; }
+.nav-caption { color: #8cabb6; font-size: 9px; letter-spacing: 1.2px; }
+.nav-item { color: #bfd0d7; border-radius: 7px; min-height: 43px; padding: 12px; margin-block: 5px; }
+.nav-item svg { color: #8caebc; stroke-width: 1.6; }
+.nav-item:hover { background: #ffffff09; color: #fff; }
+.nav-item.active { background: #294653; color: #fff; box-shadow: inset 3px 0 #e2a176; }
+.nav-item.active svg { color: #e9b18a; }
+.nav-item b { color: #d6e6eb; background: #ffffff13; }
+.sidebar-note { border-color: #ffffff14; padding-top: 20px; }
+.sidebar-voyage { display: flex; align-items: center; gap: 12px; margin: 0 0 22px; color: #c29a7d; }
+.sidebar-voyage > span { font: 9px Consolas, monospace; letter-spacing: 1.2px; }
+.sidebar-voyage small { display: block; color: #86a5b0; font-size: 8px; margin-top: 5px; letter-spacing: 2px; }
+.edition-label { color: #b8cbd2; font-size: 9px; }
+.sidebar-note strong { color: #e6eef0; }
+.sidebar-note p { color: #9ab4be; }
+.sidebar-note button { color: #e5af89; }
+.profile { border-color: #ffffff14; color: #dce8ed; }
+.profile > span { background: #284755; border-color: #446270; color: #d3e6eb; }
+.profile small, .profile button { color: #9db7c1; }
+.main-shell { margin-left: 232px; }
+.topbar { background: #f8fbfb; height: 62px; padding-inline: 32px; border-color: #d9e4e7; }
+.breadcrumb, .breadcrumb strong { color: #637e8c; }
+.workspace-status { color: #355a6c; }
+.workspace-status svg { color: #466e80; }
+.demo-indicator { color: #607987; border-color: #d6e2e6; background: #f0f6f7; border-radius: 4px; }
+.icon-button { color: #557585; }
+.icon-button:hover { background: #e5eff1; border-radius: 6px; }
+.top-avatar { color: #315a6b; background: #dfecef; border: 1px solid #d0e0e5; }
+.main-content { padding: 28px 32px 0; max-width: 1840px; }
+.page-heading { position: relative; margin-bottom: 24px; }
+.heading-copy { min-width: 0; }
+.page-heading h1 { color: #173b4d; font-weight: 670; letter-spacing: -1.3px; }
+.page-heading p { color: #627e8c; font-size: 13px; }
+.eyebrow { color: #537785; font-size: 9px; letter-spacing: 1.5px; }
+.section-index { border-color: #c6dbe1; color: #567b89; }
+.snapshot-time { color: #607e8a; }
+.maritime-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 21px;
+  min-height: 248px;
+  padding: 30px 34px;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid #2a4a59;
+  border-radius: 12px;
+  background: #143747;
+  box-shadow: 0 9px 28px #1538480a;
+}
+.maritime-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(110deg, #102e3e 4%, #173c4c 64%, #204857);
+}
+.maritime-hero .heading-copy { max-width: 58%; z-index: 1; }
+.maritime-hero h1 { color: #f4f4e9; font-size: clamp(29px, 2.75vw, 43px); font-weight: 620; line-height: 1.12; letter-spacing: -1.6px; }
+.maritime-hero p { color: #b4cbd4; font-size: 12px; line-height: 1.8; max-width: 380px; margin-top: 12px; }
+.maritime-hero .eyebrow { color: #c0ad94; font-size: 9px; margin-bottom: 17px; }
+.maritime-hero .section-index { color: #dbb797; border-color: #a3805e66; }
+.maritime-hero .heading-actions { z-index: 1; max-width: 58%; gap: 15px; }
+.maritime-hero .snapshot-time { color: #afc5cf; font-size: 10px; }
+.maritime-hero .button.secondary { color: #e1edf1; background: #ffffff06; border-color: #7895a060; font-size: 11px; min-height: 34px; padding: 8px 12px; }
+.maritime-hero .button.secondary:hover { background: #ffffff13; border-color: #adc1c8; }
+.maritime-scene { position: absolute; right: -11px; bottom: -2px; width: 54%; pointer-events: none; z-index: 0; }
+.maritime-scene img { display: block; width: 100%; height: auto; }
+.maritime-scene-caption { position: absolute; bottom: 18px; right: 29px; color: #90b0bb; font: 7px Consolas, monospace; letter-spacing: 1.9px; }
+.button { border-radius: 6px; font-weight: 550; transition: background .15s, border-color .15s; }
+.button.primary { background: #b75b36; border-color: #b75b36; color: #fff; }
+.button.primary:hover:not(:disabled) { background: #984624; border-color: #984624; }
+.button.secondary { background: #fff; border-color: #ccdce1; color: #315b6c; }
+.button.secondary:hover:not(:disabled) { background: #e9f1f3; border-color: #a6c0cb; }
+.button.is-active { background: #e4eff3; border-color: #8eb4c4; color: #20526a; }
+.stats-grid { background: #fff; border-color: #d6e3e7; border-radius: 9px; margin-bottom: 18px; }
+.stat-card { border-color: #e0e9ec; padding: 19px 22px 18px; text-align: left; }
+.stat-card > div { color: #526f7e; font-size: 12px; }
+.stat-card > div > svg { color: #688fa0; stroke-width: 1.7; }
+.stat-card > strong { color: #244a5d; font-size: 39px; font-weight: 450; margin-block: 12px 9px; }
+.stat-card > small { color: #67838f; font-size: 11px; }
+.stat-card:not(:disabled):hover { background: #edf5f7; }
+.stat-card.amber { background: #fcf4ec; }
+.stat-card.amber > strong, .stat-card.amber > div > svg { color: #ac6138; }
+.operations-layout > .stats-grid .stat-card:first-child { background: #fff; border-right-color: #e0e9ec; }
+.operations-layout > .stats-grid .stat-card:first-child > strong { color: #244a5d; }
+.operations-layout > .stats-grid .stat-card:first-child > div,
+.operations-layout > .stats-grid .stat-card:first-child > small,
+.operations-layout > .stats-grid .stat-card:first-child svg { color: #526f7e; }
+.scenario-strip { border-bottom: 1px solid #d9e5e8; padding: 0 2px 17px; }
+.scenario-strip strong { color: #3c6475; }
+.scenario-strip span { color: #6b8793; }
+.scenario-strip svg { color: #598291; }
+.scenario-strip button { color: #9e502e; }
+.shipment-focus { padding-block: 19px; border-top: 0; }
+.focus-icon { color: #396b7e; background: #e0ecf0; border-color: #c8dfe6; border-radius: 7px; }
+.focus-cargo > span { color: #648592; }
+.focus-cargo small, .focus-corridor { color: #607f8c; }
+.corridor-rule { color: #6d94a3; }
+.corridor-rule i { border-color: #a5c2cd; }
+.focus-docs { border-color: #ccdee4; color: #3d6575; background: #f7fafb; border-radius: 6px; }
+.focus-docs:hover { background: #e3eff3; }
+.panel { background: #fff; border-color: #d5e2e7; border-radius: 9px; box-shadow: 0 3px 10px #1b405303; }
+.panel-header { border-color: #e2ecef; padding: 18px 21px; }
+.panel-header h2 { color: #244b5e; }
+.panel-header > div > span { color: #648391; }
+.map-panel > .panel-header, .decision-panel > .panel-header { background: #fff; border-color: #e0e9ec; border-radius: 9px 9px 0 0; }
+.map-panel > .panel-header h2, .decision-panel > .panel-header h2 { color: #244b5e; }
+.map-panel > .panel-header > div > span, .decision-panel > .panel-header > div > span { color: #648391; }
+.map-panel .mini-label, .mini-label { color: #627f8d; border-color: #d2e2e8; background: #f4f8f9; }
+.map-panel .enhanced-map { background: #cfe0e8; border-radius: 0 0 8px 8px; }
+.map-provider-switch { background: #ffffffed; border-color: #bdd2dc; border-radius: 6px; box-shadow: 0 3px 12px #254b6012; }
+.map-provider-switch button { color: #476b7e; border-radius: 4px; }
+.map-provider-switch button[aria-pressed="true"] { background: #224e64; }
+.map-network-label { color: #466e80; }
+.map-route-dock { background: #ffffffed; border-color: #bed3dc; border-radius: 7px; box-shadow: 0 5px 18px #24485e0c; }
+.map-route-heading > span { color: #4c7386; }
+.map-route-heading > small { color: #6c8998; }
+.map-route-tabs button { border-color: #dce8ed; color: #43697b; border-radius: 5px; }
+.map-route-tabs button:hover { background: #edf5f8; }
+.map-route-tabs button[aria-pressed="true"] { color: #994a2c; background: #fcf0e8; border-color: #ce997c; }
+.map-zoom-controls { background: #fff; border-color: #c0d4de; border-radius: 5px; }
+.map-zoom-controls button { color: #315d73; }
+.map-geometry-note { color: #4f7385; }
+.country-labels { fill: #8099a2; font-size: 13px; letter-spacing: 2px; }
+.sea-label { fill: #668c9f; font-family: Georgia, serif; font-size: 28px; }
+.port-label { fill: #284f62; }
+.port-meta { fill: #698592; }
+.city-label { fill: #2a5368; }
+.map-foot { color: #54798b; }
+.map-compass { color: #446e80; }
+.map-loading { color: #315e74; background: #f3f8faee; }
+.map-error { color: #825137; background: #fff7edf5; border-color: #e5c9b1; }
+.yandex-port > i { background: #327b83; }
+.yandex-port > span { background: #fff; border-color: #c3d9e2; border-radius: 6px; }
+.yandex-port strong { color: #284f62; }
+.yandex-port small { color: #698592; }
+.yandex-city { color: #2a5368; }
+.decision-icon { background: #edf4f6; color: #3f7285; border-radius: 6px; }
+.decision-summary { border-color: #e2ebef; }
+.decision-summary strong { color: #355e70; }
+.decision-summary p { color: #69838f; }
+.forecast-band { background: #f0f6f8; border-color: #dce8ee; color: #416b7d; border-radius: 6px; }
+.forecast-band span { color: #658491; }
+.route-option { border-color: #dce7ec; border-radius: 7px; background: #fff; padding: 13px 11px; }
+.route-option:hover { background: #f1f7f9; border-color: #aecbd7; }
+.route-option.selected { background: #fcf3ec; border-color: #cb987b; box-shadow: inset 3px 0 #bf704b; }
+.route-radio { border-color: #9cb8c6; }
+.route-option-main > strong { color: #31556a; }
+.route-option-main > span { color: #65808f; }
+.route-cost > strong { color: #2d566b; }
+.route-cost > span { color: #6c8695; }
+.decision-impact { border-color: #e1ebef; }
+.decision-impact span { color: #638291; }
+.decision-impact strong { color: #2f656a; }
+.decision-footer p { color: #6c8793; line-height: 1.6; }
+.badge { border-radius: 4px; }
+.badge.success { color: #2d6c60; background: #eaf4ef; }
+.badge.warning { color: #8d5c28; background: #fcf0dd; }
+.badge.danger { color: #a1473e; background: #fbece9; }
+.timeline-panel { border-top: 2px solid #8bb2c2; }
+.timeline-leg.sea .timeline-node { color: #2e6980; background: #e0eef4; border-color: #b5d1de; }
+.timeline-leg.sea .timeline-connector { background: #98bbcd; }
+.timeline-leg.sea { background: #f4f9fb; }
+.shipments-panel .panel-header { background: #f8fbfc; border-radius: 9px 9px 0 0; }
+.search-field { border-color: #ccdee6; background: #fff; border-radius: 6px; }
+thead { background: #f1f6f8; }
+th { color: #63818f; border-color: #e0eaee; }
+td { border-color: #e5eef1; color: #476979; }
+.table-route, .cargo-link { color: #244f64; }
+tbody tr:hover { background: #f2f8fa; }
+tr.selected-row, tr.selected-row:hover { background: #edf5f8; }
+.count { color: #557e91; background: #e8f1f5; border-color: #d3e3eb; }
+.tracking-cargo-tabs button { color: #537889; border-color: #d1e1e8; border-radius: 6px; }
+.tracking-cargo-tabs button[aria-pressed="true"] { background: #214b60; border-color: #214b60; color: #fff; }
+.tracking-facts strong { color: #2c586c; }
+.tracking-facts span, .tracking-facts small { color: #658391; }
+.tracking-timeline::before { background: #d8e5eb; }
+.document-list button.selected { background: #eaf3f7; border-color: #a8c8d6; }
+.form-body input, .form-body select, .form-grid input, .form-grid select { border-color: #cbdde5; background: #fbfdfe; color: #305668; border-radius: 5px; }
+.notice:not(.error) { background: #eef5f8; border-color: #d0e3ec; color: #426d80; }
+.method-modal, .map-settings-dialog { background: #fff; border-radius: 12px; border: 1px solid #cddfe7; }
+.app-footer { color: #678693; border-color: #d4e2e8; }
+.startup { background: #edf3f4; color: #204c61; }
+@media (min-width: 1700px) {
+  .maritime-hero { min-height: 282px; padding-left: 42px; }
+  .maritime-scene { width: 51%; bottom: -14px; }
+}
+@media (max-width: 1200px) {
+  .maritime-hero { min-height: 235px; padding: 27px; }
+  .maritime-hero h1 { font-size: 32px; }
+  .maritime-scene { width: 54%; right: -23px; bottom: 8px; }
+  .maritime-hero .heading-actions { gap: 10px; }
+  .maritime-scene-caption { right: 40px; font-size: 6px; letter-spacing: 1px; }
+}
+@media (max-width: 1100px) and (min-width: 761px) {
+  .sidebar { width: 70px; padding: 25px 10px 0; }
+  .sidebar .brand { justify-content: center; padding: 0 0 25px; }
+  .sidebar .brand > span:last-child, .workspace-label, .nav-caption,
+  .sidebar-note, .profile > div, .profile > button, .nav-item > span, .nav-item > b { display: none; }
+  .nav-item { width: 48px; justify-content: center; padding: 13px; }
+  .profile { justify-content: center; margin-top: auto; }
+  .main-shell { margin-left: 70px; }
+}
+@media (max-width: 760px) {
+  .sidebar { width: 64px; padding: 22px 8px 0; }
+  .main-shell { margin-left: 64px; }
+  .sidebar-voyage { display: none; }
+  .nav-item { width: 46px; padding: 13px; }
+  .main-content { padding: 22px 18px 0; }
+  .topbar { padding-inline: 18px; }
+  .maritime-hero { min-height: 310px; justify-content: flex-start; padding: 25px; gap: 17px; }
+  .maritime-hero .heading-copy { max-width: 100%; }
+  .maritime-hero h1 { font-size: 32px; }
+  .maritime-hero p { max-width: 300px; font-size: 12px; }
+  .maritime-hero .heading-actions { max-width: 100%; align-items: flex-start; gap: 9px; }
+  .maritime-scene { width: 365px; right: -40px; bottom: -5px; opacity: .75; }
+  .maritime-scene-caption { bottom: 15px; right: 55px; }
+  .maritime-hero .button.secondary { background: #163b4c; }
+  .stat-card { padding: 17px; }
+  .stat-card > strong { font-size: 35px; }
+}
+@media (max-width: 520px) {
+  .sidebar { width: 54px; padding: 20px 5px 0; }
+  .main-shell { margin-left: 54px; }
+  .nav-item { width: 42px; padding: 12px; }
+  .main-content { padding: 17px 12px 0; }
+  .topbar { padding-inline: 12px; }
+  .maritime-hero { min-height: 346px; border-radius: 9px; padding: 23px 19px; gap: 18px; }
+  .maritime-hero h1 { font-size: 29px; letter-spacing: -1px; max-width: 260px; }
+  .maritime-hero .eyebrow { font-size: 7px; gap: 7px; letter-spacing: .8px; }
+  .maritime-hero p { max-width: 240px; font-size: 11px; margin-top: 10px; }
+  .maritime-hero .heading-actions { flex-direction: column; gap: 10px; }
+  .maritime-hero .snapshot-time { font-size: 9px; }
+  .maritime-scene { width: 330px; right: -49px; bottom: -3px; opacity: .85; }
+  .maritime-scene-caption { bottom: 17px; font-size: 5px; }
+  .stat-card { padding: 15px 12px; }
+  .stat-card > div { font-size: 10px; }
+  .stat-card > strong { font-size: 31px; }
+  .stat-card > small { font-size: 10px; }
+  .panel-header { padding: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .button { transition: none; }
+}

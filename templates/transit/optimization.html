@@ -1,0 +1,19 @@
+{% load transit_tags %}
+<section class="panel optimization-panel" id="optimization-panel">
+    <div class="panel-header"><div><h2>Математический выбор коридора</h2><span>Расписания, ограничения и прогноз погоды · перебор допустимых вариантов</span></div><span class="mini-label">3 коридора / до 24 отправлений</span></div>
+    <div class="optimization-body">
+        <div class="optimization-controls">
+            <label>Критерий<select id="optimization-objective"><option value="time">Раньше доставить</option><option value="cost">Меньше затраты</option><option value="carbon">Меньше CO₂e</option></select></label>
+            <label>Числовой прогноз<select id="optimization-source"><option value="openmeteo">ECMWF через Open-Meteo</option><option value="windy">Windy Point Forecast · GFS</option></select></label>
+            <label>Предел ветра, м/с<input id="optimization-wind-limit" type="number" value="15" min="1" max="60" step="0.5"></label>
+            <label>Предел порывов, м/с<input id="optimization-gust-limit" type="number" value="22" min="1" max="60" step="0.5"></label>
+        </div>
+        <div class="optimization-actions"><label><input id="optimization-auto" type="checkbox" checked> Автообновление рекомендации</label><button type="button" id="optimization-refresh" class="button primary compact">{% icon 'refresh' 15 %} Пересчитать</button><button type="button" id="optimization-json" class="button secondary compact" disabled>JSON-отчёт</button><button type="button" id="optimization-html" class="button secondary compact" disabled>Отчёт для печати</button></div>
+        <button type="button" id="optimization-accept" class="button primary compact" disabled>Принять расчётный демо-план</button>
+        <p id="optimization-status" role="status">Запрашиваем числовой прогноз и сравниваем допустимые отправления…</p>
+        <p class="form-hint">Параметры узлов учитываются вместе с прогнозом: очередь и ограничение окна влияют на отправления, сценарный ветер выше заданного предела исключает коридор через этот узел.</p>
+        <div id="optimization-results"></div>
+        <details class="optimization-details"><summary>Что означает оптимальный маршрут</summary><p>Точный перебор заданных коридоров и отправлений: сначала доставка в срок, затем выбранный критерий. Если все варианты опаздывают — сначала минимальное опоздание. Очереди, расписания и тарифы пока сценарные. Пределы ветра — ваши расчётные условия, а не официальное разрешение на плавание. Линия на карте остаётся условной.</p><p>Windy-виджет показывает погоду. Для чисел Windy нужен отдельный Point Forecast API key. Открытый ECMWF через Open-Meteo указан отдельно; это не извлечение данных из виджета. Автопересчёт обновляет рекомендацию и отчёт. Кнопка принятия отдельно фиксирует условный демо-слот по этому же расчёту после проверки документов; это не бронирование у перевозчика.</p></details>
+    </div>
+</section>
+{{ optimization_config|json_script:'optimization-config' }}

@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 430" fill="none">
+  <defs>
+    <linearGradient id="water" x1="160" y1="190" x2="580" y2="410" gradientUnits="userSpaceOnUse"><stop stop-color="#e8f0f1"/><stop offset="1" stop-color="#bad3dc"/></linearGradient>
+    <linearGradient id="hull" x1="180" y1="230" x2="590" y2="340" gradientUnits="userSpaceOnUse"><stop stop-color="#214b5d"/><stop offset="1" stop-color="#102c3b"/></linearGradient>
+    <linearGradient id="copper" x2="1" y2="1"><stop stop-color="#d5956f"/><stop offset="1" stop-color="#b75b36"/></linearGradient>
+    <filter id="shadow" x="-30%" y="-50%" width="160%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+    <g id="box-orange"><path d="M0 0 42-21 84 0 42 21Z" fill="#e3ac87"/><path d="M0 0 42 21V58L0 37Z" fill="#b75b36"/><path d="m42 21 42-21v37L42 58Z" fill="#964728"/><path d="m8 7 26 13m-26-5 26 13M8 23l26 13M50 25l26-13M50 33l26-13M50 41l26-13" stroke="#f2d1b4" stroke-opacity=".38" stroke-width="1.5"/></g>
+    <g id="box-blue"><path d="M0 0 42-21 84 0 42 21Z" fill="#668c9d"/><path d="M0 0 42 21V58L0 37Z" fill="#305a6e"/><path d="m42 21 42-21v37L42 58Z" fill="#214458"/><path d="m8 7 26 13m-26-5 26 13M8 23l26 13M50 25l26-13M50 33l26-13M50 41l26-13" stroke="#bed2db" stroke-opacity=".4" stroke-width="1.5"/></g>
+    <g id="box-teal"><path d="M0 0 42-21 84 0 42 21Z" fill="#83aeb0"/><path d="M0 0 42 21V58L0 37Z" fill="#47858b"/><path d="m42 21 42-21v37L42 58Z" fill="#31676f"/><path d="m8 7 26 13m-26-5 26 13M8 23l26 13M50 25l26-13M50 33l26-13M50 41l26-13" stroke="#cce0db" stroke-opacity=".38" stroke-width="1.5"/></g>
+  </defs>
+  <path d="m30 265 330-166 330 166-330 164Z" fill="url(#water)"/>
+  <g stroke="#fff" stroke-opacity=".65"><path d="m70 285 330-166M110 305 440 139M150 325 480 159M190 345 520 179M230 365 560 199M270 385 600 219M310 405 640 239M70 245l330 164M110 225l330 164M150 205l330 164M190 185l330 164M230 165l330 164M270 145l330 164M310 125l330 164"/></g>
+  <g stroke="#6e9aaa" stroke-opacity=".34"><path d="M47 278q100-49 170-25t167-41 227-11M108 328q100-50 178-24t165-44 160-7M168 367q99-45 166-25t157-30 123-23"/></g>
+  <path d="m170 260 180-87 259 132-189 97Z" fill="#284f60" fill-opacity=".22" filter="url(#shadow)"/>
+  <path d="m156 195 187-94 270 136-203 101Z" fill="#f2eee3" stroke="#ccd7d6" stroke-width="2"/>
+  <path d="m156 195 254 127 203-85-7 43-196 100-241-122Z" fill="url(#hull)"/>
+  <path d="m170 252 239 121 193-99" stroke="#b75b36" stroke-width="5"/>
+  <path d="m169 196 174-86 250 127-184 92Z" fill="#d9e1dd" stroke="#b4c8cc"/>
+  <path d="m169 196 240 133 184-92" stroke="#fbfcf6" stroke-width="4"/>
+  <path d="m178 192 166-73 231 117-164 81Z" stroke="#a2b9c0" stroke-dasharray="4 4"/>
+  <use href="#box-blue" x="312" y="153"/>
+  <use href="#box-orange" x="357" y="176"/>
+  <use href="#box-blue" x="402" y="199"/>
+  <use href="#box-teal" x="447" y="222"/>
+  <use href="#box-orange" x="267" y="175"/>
+  <use href="#box-blue" x="312" y="198"/>
+  <use href="#box-teal" x="357" y="221"/>
+  <use href="#box-orange" x="402" y="244"/>
+  <use href="#box-orange" x="312" y="118"/>
+  <use href="#box-teal" x="357" y="141"/>
+  <use href="#box-blue" x="312" y="161"/>
+  <use href="#box-orange" x="357" y="184"/>
+  <path d="m185 176 53-26 53 27-53 27Z" fill="#f9faf3"/>
+  <path d="m185 176 53 28v51l-53-28Z" fill="#c6d5d8"/>
+  <path d="m238 204 53-27v51l-53 27Z" fill="#93afb9"/>
+  <path d="m189 162 49-24 49 25-49 25Z" fill="#fffdf4"/>
+  <path d="m189 162 49 26v20l-49-26Z" fill="#dce7e5"/>
+  <path d="m238 188 49-25v20l-49 25Z" fill="#a7c0c8"/>
+  <path d="m198 172 31 16v8l-31-16Zm48 19 31-16v8l-31 16Z" fill="#1a4153"/>
+  <path d="M239 138V91m-20 11 39 20m-28-28 19 10" stroke="#3b6274" stroke-width="3" stroke-linecap="round"/>
+  <path d="m528 286 25-13m-18 25 25-13" stroke="#d5e2e3" stroke-width="3"/>
+  <g stroke="#6d8f9d" stroke-width="1.5"><path d="M640 90v64m-25-32h50"/><circle cx="640" cy="122" r="20"/><path d="m640 98 5 24-5 21-5-21Z" fill="#b75b36" stroke="none"/></g>
+  <g fill="#527480" font-family="Segoe UI,Arial,sans-serif" font-size="10" letter-spacing="2"><text x="636" y="82">N</text><text x="42" y="349" transform="rotate(26 42 349)">CASPIAN TRANSIT</text></g>
+  <path d="M85 162h38m-19-19v38M572 364h34m-17-17v34" stroke="#b75b36" stroke-opacity=".65"/>
+  <circle cx="99" cy="162" r="4" fill="#b75b36"/>
+</svg>

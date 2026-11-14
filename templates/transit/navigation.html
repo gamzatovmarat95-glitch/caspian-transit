@@ -1,0 +1,28 @@
+{% load static transit_tags %}
+<header class="fleet-header">
+    <div class="fleet-mast">
+        <a href="/" class="fleet-brand" aria-label="Caspian Transit — главная">
+            <img src="{% static 'brand/caspian-logo-mark.svg' %}?v=orange-wave-crop2" width="56" height="56" alt="" />
+            <span>Caspian Transit<small>МОРСКАЯ ЛОГИСТИКА</small></span>
+        </a>
+        <div class="fleet-corridor"><span>КАСПИЙСКИЙ КОНТУР</span><strong>Россия <i></i> Иран</strong></div>
+        <div class="fleet-account">
+            <a class="fleet-create" href="/operations" aria-label="Создать партию">{% icon 'plus' 16 %} Новая партия</a>
+            <a href="/accounts/team" class="fleet-user" aria-label="Команда и доступ">{% icon 'users' 18 %}<span>{% if user.is_authenticated %}{{ user.username }}{% else %}Демо-логист{% endif %}</span></a>
+        </div>
+    </div>
+    <nav class="fleet-navigation" aria-label="Разделы приложения">
+        {% if pages %}
+            {% for id,label,glyph in pages %}
+            <a href="/?page={{ id }}&amp;cargo={{ cargo.id }}" class="nav-item{% if page == id %} active{% endif %}" {% if page == id %}aria-current="page"{% endif %}>
+                <span class="nav-number">0{{ forloop.counter }}</span>{% icon glyph 17 %}<span>{{ label }}</span>{% if id == 'documents' and pending %}<b>{{ pending }}</b>{% endif %}
+            </a>
+            {% endfor %}
+        {% else %}
+            <a class="nav-item" href="/"><span class="nav-number">01</span>{% icon 'compass' 17 %}<span>Обзор коридора</span></a>
+            <a class="nav-item{% if request.path == '/operations' %} active{% endif %}" href="/operations"><span class="nav-number">02</span>{% icon 'container' 17 %}<span>Управление партиями</span></a>
+            <a class="nav-item{% if request.path == '/vessels' %} active{% endif %}" href="/vessels"><span class="nav-number">03</span>{% icon 'ship' 17 %}<span>Суда и погода</span></a>
+            <a class="nav-item{% if request.path == '/accounts/team' %} active{% endif %}" href="/accounts/team"><span class="nav-number">04</span>{% icon 'users' 17 %}<span>Команда</span></a>
+        {% endif %}
+    </nav>
+</header>

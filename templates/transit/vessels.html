@@ -1,0 +1,7 @@
+{% extends 'transit/operations-base.html' %}{% block content %}
+<h1>Суда Каспия · AIS</h1><p>Внешние наблюдения Open Waters. Окно: 36–47° с. ш., 47–54° в. д.; последние 30 минут. Покрытие зависит от приёмников и не подтверждено для всего Каспия.</p>
+<section aria-live="polite"><h2>{{ ais.message }}</h2><p>Проверка: {{ ais.fetchedAt }} · статус: {{ ais.status }}</p><a class="button" href="/vessels">Проверить снова</a><p>Запросы к источнику кешируются на 60 секунд; при ошибке — на 30 секунд.</p></section>
+{% if ais.vessels %}<section><div class="table-scroll"><table><thead><tr><th>Судно / MMSI</th><th>Координаты</th><th>Скорость, узлы</th><th>Последний сигнал · UTC</th></tr></thead><tbody>{% for vessel in ais.vessels %}<tr><td>{{ vessel.name }}<small>{{ vessel.mmsi }}</small></td><td>{{ vessel.lat }}, {{ vessel.lon }}</td><td>{{ vessel.speed|default_if_none:'Нет данных' }}</td><td>{{ vessel.seen }}{% if vessel.stale %}<small>Устаревший или некорректный по времени сигнал</small>{% endif %}</td></tr>{% endfor %}</tbody></table></div></section>{% endif %}
+<p><a href="https://openwaters.io/api/ais/" target="_blank" rel="noopener noreferrer">Источник и условия Open Waters AIS</a>. {% for key,value in ais.attribution.items %}{{ key }}: {{ value }} {% endfor %}</p>
+<p>AIS не подтверждает перевозку конкретной партии, наличие мест на судне или решение таможни. Эти позиции не используются для изменения ETA груза без достоверной связи партии с рейсом. Сервис не предназначен для навигации.</p>
+{% endblock %}

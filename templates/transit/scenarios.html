@@ -1,0 +1,164 @@
+{% load transit_tags %}
+<p class="scenario-scope-note">Настройки сохраняются отдельно для каждого узла. Изменение одного порта не сбрасывает остальные. «Обычная обработка» ниже устанавливает спокойные условия сразу во всех портах.</p>
+<div class="scenario-nodes" aria-label="Сохранённые параметры всех узлов">
+{% for node in s.ports %}
+<a href="/?page=scenarios&amp;cargo={{ cargo.id }}&amp;port={{ node.id }}" {% if node.id == port.id %}aria-current="true"{% endif %}>
+    <strong>{{ node.name }}</strong><span>Очередь {{ node.queueUnits }} · ветер {{ node.windMs|num }} м/с</span>
+    <small>{% if node.closureStart != None %}Ограничение {{ node.closureEnd|sub:node.closureStart|hours|num }} ч{% else %}Окно не ограничено сценарием{% endif %}</small>
+</a>
+{% endfor %}
+</div>
+<form method="post" class="scenario-presets">
+    {% include 'transit/action_fields.html' %}
+    <input type="hidden" name="type" value="scenario" />
+    <button type="submit" name="name" value="normal">
+        {% icon 'check' 21 %}
+        <strong>Обычная обработка</strong>
+        <span>Свободные окна и небольшая очередь</span>
+        {% icon 'external' 15 %}
+    </button>
+    <button type="submit" name="name" value="storm">
+        {% icon 'wind' 21 %}
+        <strong>Погодное окно</strong>
+        <span>Ограничение отправлений в Оле</span>
+        {% icon 'external' 15 %}
+    </button>
+    <button type="submit" name="name" value="queue">
+        {% icon 'container' 21 %}
+        <strong>Перегрузка узла</strong>
+        <span>30 партий в очереди Махачкалы</span>
+        {% icon 'external' 15 %}
+    </button>
+    <button type="submit" name="name" value="blocked">
+        {% icon 'alert' 21 %}
+        <strong>Все окна закрыты</strong>
+        <span>Проверка отсутствия альтернатив</span>
+        {% icon 'external' 15 %}
+    </button>
+</form>
+{% if scenario_result %}
+<section class="panel scenario-result" id="scenario-result" aria-labelledby="scenario-result-title">
+    <div class="panel-header"><div><h2 id="scenario-result-title">Сценарий рассчитан · версия {{ scenario_result.version }}</h2><span>{{ scenario_result.scenario }} · сравнение для {{ scenario_result.cargoId }}</span></div></div>
+    <div class="scenario-result-body">
+        {% for p in scenario_result.ports %}
+        <p><strong>{{ p.name }}:</strong> очередь {{ p.beforeQueue }} → {{ p.queue }} партий; ветер {{ p.beforeWind|num }} → {{ p.wind|num }} м/с; ограничение {{ p.beforeClosure|num }} → {{ p.closure|num }} ч.</p>
+        {% empty %}<p>Параметры совпали с уже сохранёнными. Новых изменений нет.</p>{% endfor %}
+        <p>Изменились показатели {{ scenario_result.changedRoutes }} из {{ scenario_result.routes|length }} коридоров. Сравнение ниже — прогноз жизненного цикла; математическая рекомендация с внешней погодой обновляется в отдельном блоке карты. Если автообновление выключено, нажмите там «Пересчитать».</p>
+        <div class="scenario-result-scroll"><table>
+            <thead><tr><th>Коридор</th><th>Обработка в портах, ч<br>до → после</th><th>Отправление, МСК<br>до → после</th><th>Доставка, МСК<br>до → после</th><th>Результат</th></tr></thead>
+            <tbody>{% for r in scenario_result.routes %}<tr>
+                <td>{{ r.routeName }}</td><td>{{ r.beforeProcessing|num }} → <strong>{{ r.processing|num }}</strong></td>
+                <td>{{ r.beforeDeparture|when }}<br>→ <strong>{{ r.departure|when }}</strong></td>
+                <td>{{ r.beforeArrival|when }}<br>→ <strong>{{ r.arrival|when }}</strong></td>
+                <td>{% if not r.changed %}Прогноз не изменился{% elif r.sameArrival and r.sameSlot %}Показатели изменились, рейс и ETA прежние{% elif r.sameSlot %}Тот же рейс, изменился ETA{% else %}Изменилось окно отправления{% endif %}</td>
+            </tr>{% endfor %}</tbody>
+        </table></div>
+        <p class="form-hint">Изменение очереди не обязательно меняет рейс: партия может по-прежнему успевать к тому же cutoff. Изменение узла влияет на коридоры, проходящие через него. Геометрия линии не меняется от каждой правки — она обозначает коридор, а не время доставки.</p>
+    </div>
+</section>
+{% endif %}
+<div class="lab-grid">
+    <section class="panel parameter-panel">
+        <div class="panel-header">
+            <div>
+                <h2>Параметры узла</h2>
+                <span>Прозрачные условия расчётной модели</span>
+            </div>
+            {% icon 'sliders' 19 %}
+        </div>
+        <form method="post" class="form-body" id="scenario-form">
+            {% include 'transit/action_fields.html' %}
+            <input type="hidden" name="type" value="scenario" />
+            <input type="hidden" name="name" value="custom" />
+            <label>Порт{{ scenario_form.portId }}</label>
+            <label class="range-label">
+                <span>
+                    Очередь условных партий
+                    <b>
+                        <output for="id_queue">{{ scenario_form.queue.value|num }}</output>
+                        партий
+                    </b>
+                </span>
+                {{ scenario_form.queue }}
+                <small>
+                    <span>0</span>
+                    <span>50 партий</span>
+                </small>
+                {{ scenario_form.queue.errors }}
+            </label>
+            <label class="range-label">
+                <span>
+                    Сценарный ветер
+                    <b>
+                        <output for="id_wind">{{ scenario_form.wind.value|num }}</output>
+                        м/с
+                    </b>
+                </span>
+                {{ scenario_form.wind }}
+                <small>
+                    <span>0</span>
+                    <span>35 м/с</span>
+                </small>
+                {{ scenario_form.wind.errors }}
+            </label>
+            <label class="range-label">
+                <span>
+                    Ограничение отправлений
+                    <b>
+                        <output for="id_closureHours">{{ scenario_form.closureHours.value|num }}</output>
+                        ч
+                    </b>
+                </span>
+                {{ scenario_form.closureHours }}
+                <small>
+                    <span>0</span>
+                    <span>72 ч</span>
+                </small>
+                {{ scenario_form.closureHours.errors }}
+            </label>
+            <p class="form-hint">
+                Окно ограничения начинается через 20 ч от снимка. Это параметр сценария, а не факт
+                закрытия порта.
+            </p>
+            <p class="form-hint">В математической рекомендации сценарный ветер в этом узле дополнительно сравнивается с пределом ветра ниже. Он действует на весь расчётный горизонт и не подменяет внешний прогноз.</p>
+            <button class="button primary full" type="submit">
+                {% icon 'chart' 16 %}
+                Рассчитать сценарий
+            </button>
+        </form>
+    </section>
+    {% include 'transit/map.html' %}
+</div>
+<section class="panel impact-panel">
+    <div class="panel-header">
+        <div>
+            <h2>Последствия для перевозок</h2>
+            <span>Общее состояние модели, а не отдельная иллюстрация</span>
+        </div>
+    </div>
+    <form method="get" class="impact-cards">
+        <input type="hidden" name="page" value="overview" />
+        {% for row in impact_rows %}
+            <button name="cargo" value="{{ row.cargo.id }}" type="submit">
+                <strong>{{ row.cargo.id }}</strong>
+                <span>{{ row.cargo.name }}</span>
+                <b class="{% if row.forecast.lateHours > 0 or not row.forecast.feasible %}negative{% else %}positive{% endif %}">
+                    {% if row.forecast.feasible %}
+                        {{ row.forecast.lateHours|num }} ч опоздания
+                    {% else %}
+                        Нет отправления
+                    {% endif %}
+                </b>
+                <small>
+                    {% if row.alternative %}
+                        Допустимый вариант: {{ row.alternative.routeName }}
+                    {% else %}
+                        Альтернатив в горизонте нет
+                    {% endif %}
+                </small>
+                {% icon 'arrow' 15 %}
+            </button>
+        {% endfor %}
+    </form>
+</section>
+{% include 'transit/weather.html' %}

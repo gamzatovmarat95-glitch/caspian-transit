@@ -1,0 +1,36 @@
+{% load transit_tags %}
+<section class="panel weather-panel">
+    <div class="panel-header">
+        <div>
+            <h2>Внешний прогноз ветра</h2>
+            <span>Open-Meteo · модель погоды, не наблюдение порта</span>
+        </div>
+        <button
+            type="button"
+            class="icon-button"
+            id="refresh-weather"
+            aria-label="Обновить внешний прогноз"
+        >
+            {% icon 'refresh' 17 %}
+        </button>
+    </div>
+    <div class="weather-body">
+        <template id="weather-icon">{% icon 'cloud' 30 %}</template>
+        <div id="weather-reading" role="status">Загружаем внешний прогноз…</div>
+        <div class="weather-actions">
+            <button type="button" class="text-button" id="use-weather" disabled>
+                {% icon 'wind' 14 %}
+                Взять ветер для сценария
+                {% icon 'arrow' 14 %}
+            </button>
+            <a href="https://open-meteo.com/" target="_blank" rel="noreferrer">
+                Источник и атрибуция
+                {% icon 'external' 13 %}
+            </a>
+        </div>
+        <small>
+            Прогноз заполняет параметр формы. Он не является сообщением о фактическом закрытии
+            порта.
+        </small>
+    </div>
+</section>

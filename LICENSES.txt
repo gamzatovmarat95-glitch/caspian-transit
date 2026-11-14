@@ -1,0 +1,16 @@
+# Авторство и сторонние компоненты
+
+Для сохранения выбранного владельцем вида используются оригинальные Lucide SVG (ISC, сохранён текст `docs/reference/LUCIDE-LICENSE.txt`) и сброс стилей Tailwind CSS (MIT, `docs/reference/TAILWIND-LICENSE.txt`). Геометрия иконок перенесена из уже установленного исходного пакета в `transit/data/icons.json`. React, Lucide React и Tailwind CLI для запуска Django не требуются: в runtime используются готовые данные SVG и CSS.
+
+Python/Django-перенос Caspian Transit сохраняет морское оформление,SVG-знак,иллюстрацию и предметную спецификацию исходного проекта. Атрибуция прежних компонентов сохранена отдельно в `docs/reference/ORIGINAL-THIRD-PARTY.txt`; это исторический список, а не заявление, что весь прежний Node/React стек входит в новый runtime.
+
+- Django — BSD3-Clause, https://github.com/django/django/blob/main/LICENSE .
+- asgiref — BSD3-Clause, https://github.com/django/asgiref/blob/main/LICENSE .
+- sqlparse — BSD3-Clause, https://github.com/andialbrecht/sqlparse/blob/master/LICENSE .
+- tzdata — Apache2.0 для Python-пакета; лицензия IANA данных включена в дистрибутив.
+- Natural Earth — public domain; сохранены географические данные и указание источника в схеме: https://www.naturalearthdata.com/about/terms-of-use/ .
+- ЯндексКарты — внешний SDK провайдера, не встроенная библиотека; его атрибуция остаётся на карте.
+- Open-Meteo — внешний прогноз с указанием источника и времени; https://open-meteo.com/ .
+- DESNZ2025 — исходный справочник коэффициентов CO₂e указан в отчёте и интерфейсе; это справочные факторы, не собственные измерения.
+
+Лицензии установленных Python-дистрибутивов находятся в их `*.dist-info/licenses/` или соответствующих файлахлицензий окружения. Исходные wheel не изменяются.

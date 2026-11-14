@@ -1,0 +1,206 @@
+/* Readable on a laptop/projector; map remains a labelled schematic. */
+.panel-header h2 {
+  font-size: 14px;
+}
+.panel-header > div > span {
+  font-size: 11px;
+}
+.stat-card > div {
+  font-size: 12px;
+}
+.stat-card > small {
+  font-size: 11px;
+}
+.scenario-strip,
+.scenario-strip strong,
+.scenario-strip button {
+  font-size: 11px;
+}
+.snapshot-time {
+  font-size: 11px;
+}
+.badge {
+  font-size: 10px;
+}
+.route-option-main > strong,
+.route-cost > strong {
+  font-size: 12px;
+}
+.route-option-main > span,
+.route-cost > span {
+  font-size: 10px;
+}
+.route-option-main em {
+  font-size: 8px;
+}
+.decision-summary strong {
+  font-size: 13px;
+}
+.decision-summary p {
+  font-size: 11px;
+}
+.decision-impact span {
+  font-size: 10px;
+}
+.decision-impact strong {
+  font-size: 12px;
+}
+.decision-footer .button {
+  font-size: 12px;
+}
+.decision-footer p {
+  font-size: 10px;
+}
+.map-panel {
+  display: flex;
+  flex-direction: column;
+}
+.map-panel .map-canvas {
+  flex: 1;
+  min-height: 440px;
+}
+.country-labels {
+  font-size: 15px;
+  letter-spacing: 2px;
+}
+.port-label {
+  font-size: 18px;
+}
+.port-meta {
+  font-size: 12px;
+}
+.city-label {
+  font-size: 17px;
+}
+.timeline-leg > strong {
+  font-size: 11px;
+}
+.timeline-leg > small {
+  font-size: 12px;
+}
+.timeline-leg > span,
+.timeline-leg p {
+  font-size: 10px;
+}
+.table-controls .search-field input {
+  font-size: 11px;
+}
+table {
+  font-size: 12px;
+}
+th {
+  font-size: 11px;
+}
+td small {
+  font-size: 11px;
+}
+.cargo-link,
+.table-route {
+  font-size: 12px;
+}
+.form-body label,
+.form-grid label {
+  font-size: 12px;
+}
+.form-body select,
+.form-grid input {
+  font-size: 13px;
+}
+.form-hint {
+  font-size: 11px;
+}
+.document-item strong {
+  font-size: 12px;
+}
+.document-item small {
+  font-size: 11px;
+}
+.sources-grid p,
+.analogue-card ul,
+.analogue-card > p,
+.analogue-card details p {
+  font-size: 12px;
+}
+.method-body {
+  font-size: 12px;
+}
+.method-dl {
+  font-size: 11px;
+}
+.weather-body > p {
+  font-size: 12px;
+}
+.startup .button {
+  margin-top: 8px;
+}
+@media (max-width: 1200px) {
+  .route-option-main > strong,
+  .route-cost > strong {
+    font-size: 11px;
+  }
+  .route-option-main > span,
+  .route-cost > span {
+    font-size: 10px;
+  }
+  .panel-header h2 {
+    font-size: 13px;
+  }
+  .stat-card > div {
+    font-size: 11px;
+  }
+  .stat-card > small {
+    font-size: 10px;
+  }
+}
+@media (max-width: 760px) {
+  .map-panel .map-canvas {
+    min-height: 390px;
+  }
+  .route-option-main > strong,
+  .route-cost > strong {
+    font-size: 12px;
+  }
+  .route-option-main > span {
+    font-size: 10px;
+  }
+  .table-controls .button {
+    font-size: 10px;
+  }
+  .timeline-leg {
+    min-width: 135px;
+  }
+  .document-item {
+    min-width: 185px;
+    max-width: 185px;
+  }
+  .document-item small {
+    max-width: 118px;
+  }
+}
+
+.forecast-band {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 0 17px 8px;
+  padding: 10px 11px;
+  border: 1px solid #e7eeee;
+  border-radius: 7px;
+  color: #7896a1;
+  background: #fafcfc;
+}
+.forecast-band strong {
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
+  color: #5c7d8a;
+}
+.forecast-band span {
+  display: block;
+  font-size: 9px;
+  margin-top: 3px;
+  line-height: 1.5;
+}
+.forecast-band svg {
+  margin-top: 2px;
+}

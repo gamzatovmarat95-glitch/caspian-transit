@@ -1,0 +1,14 @@
+{% extends 'transit/operations-base.html' %}{% load static transit_tags %}
+{% block content %}
+<div class="landing-grid">
+    <div class="landing-copy">
+        <span class="landing-kicker">РОССИЯ — КАСПИЙ — ИРАН</span>
+        <h1>Держите курс.<br>Управляйте стыковками.</h1>
+        <p>Планируйте перевозки, сравнивайте коридоры и отслеживайте изменения в одном окне логиста.</p>
+        <div class="landing-actions"><a href="/accounts/login">Войти в пространство {% icon 'arrow' 15 %}</a><a href="/accounts/register">Создать аккаунт</a></div>
+        <a class="landing-demo" href="/session/start?return_to=/">Открыть учебный демостенд →</a>
+        <p class="landing-disclaimer">Демонстрационные партии и расписания. Ограничения расчётов указаны в приложении.</p>
+    </div>
+    <div class="landing-art"><img src="{% static 'brand/dispatch-harbor.svg' %}" alt="Изометрическая иллюстрация контейнерного судна"><div class="landing-facts"><span><strong>04</strong>портовых узла</span><span><strong>03</strong>коридора доставки</span><span><strong>01</strong>окно управления</span></div></div>
+</div>
+{% endblock %}

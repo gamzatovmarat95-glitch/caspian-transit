@@ -1,0 +1,205 @@
+{% load static transit_tags %}
+<!doctype html>
+<html lang="ru">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <meta
+            name="description"
+            content="Caspian Transit — планирование перевозок между Россией и Ираном"
+        />
+        <title>{{ title }} · Caspian Transit</title>
+        <link rel="icon" type="image/svg+xml" href="{% static 'brand/caspian-logo-mark.svg' %}?v=orange-wave-crop2" />
+        <link rel="stylesheet" href="{% static 'css/reset.css' %}" />
+        <link rel="stylesheet" href="{% static 'css/caspian.css' %}" />
+        <link rel="stylesheet" href="{% static 'css/readability.css' %}" />
+        <link rel="stylesheet" href="{% static 'css/studio.css' %}" />
+        <link rel="stylesheet" href="{% static 'css/operations.css' %}" />
+        <link rel="stylesheet" href="{% static 'css/workflows.css' %}" />
+        <link rel="stylesheet" href="{% static 'css/maritime.css' %}" />
+        <link rel="stylesheet" href="{% static 'css/legacy-bridge.css' %}" />
+        <script src="{% static 'js/workspace.js' %}?v=1.5.6" defer></script>
+        <link rel="stylesheet" href="{% static 'css/live-data.css' %}" />
+        <link rel="stylesheet" href="{% static 'css/map-atmosphere.css' %}" />
+        <script src="{% static 'js/live-data.js' %}?v=1.5.6" defer></script>
+        <script src="{% static 'js/windy-view.js' %}" defer></script>
+        <link rel="stylesheet" href="{% static 'css/optimization.css' %}" />
+        <link rel="stylesheet" href="{% static 'css/deck.css' %}?v=1.5.6" />
+        <script src="{% static 'js/optimization.js' %}" defer></script>
+    </head>
+    <body>
+        <a href="#main" class="skip-link">К содержимому</a>
+        <div class="app-shell page-{{ page }}">
+            {% include 'transit/navigation.html' %}
+            <div class="main-shell">
+                <header class="topbar">
+                    <div class="breadcrumb">
+                        <span class="workspace-status">
+                            {% icon 'ship' 15 %}
+                            Транспортная сеть
+                        </span>
+                        {% icon 'chevron' 13 %}
+                        <strong>{{ title }}</strong>
+                    </div>
+                    <div class="top-actions">
+                        <span class="demo-indicator">
+                            <i></i>
+                            Учебный сценарий
+                        </span>
+                        <a href="{{ request.get_full_path }}" class="icon-button" aria-label="Обновить данные">
+                            {% icon 'refresh' 17 %}
+                        </a>
+                        <button
+                            class="icon-button"
+                            type="button"
+                            data-method
+                            aria-label="Открыть методику"
+                        >
+                            {% icon 'help' %}
+                        </button>
+                        <span class="top-avatar">ДЛ</span>
+                    </div>
+                </header>
+                <main id="main" class="main-content">
+                    <div class="page-heading{% if page == 'overview' %} maritime-hero{% endif %}">
+                        {% if page == 'overview' %}
+                            <div class="maritime-scene" aria-hidden="true">
+                                <img src="{% static 'brand/dispatch-harbor.svg' %}" width="720" height="430" alt="" />
+                                <span class="maritime-scene-caption">
+                                    СУХОПУТНЫЕ СТЫКОВКИ / МОРСКИЕ КОРИДОРЫ
+                                </span>
+                            </div>
+                        {% endif %}
+                        <div class="heading-copy">
+                            <div class="eyebrow">
+                                <span class="section-index">0{{ page_index }}</span>
+                                ОПЕРАЦИОННЫЙ КОНТУР / КАСПИЙ
+                            </div>
+                            <h1>{{ title }}</h1>
+                            <p>{{ subtitle }}</p>
+                        </div>
+                        {% if page == 'overview' %}<div class="hero-instruments"><span><strong>{{ s.ports|length|stringformat:'02d' }}</strong> портовых узла</span><span><strong>{{ s.routes|length|stringformat:'02d' }}</strong> коридора</span><span><strong>{{ s.cargo|length|stringformat:'02d' }}</strong> партий в работе</span></div>{% endif %}
+                        <div class="heading-actions">
+                            <span class="snapshot-time">
+                                {% icon 'clock' 15 %}
+                                Старт сценария: {{ s.baseTime|when }} МСК
+                            </span>
+                            <a class="button secondary" href="/api/export">
+                                {% icon 'download' 15 %}
+                                Экспорт отчёта
+                            </a>
+                        </div>
+                    </div>
+                    <div class="workspace-state-strip" aria-label="Версия и состояние проекта">
+                        <span><strong>Программа:</strong> {{ app_version }}</span>
+                        <span><strong>Данные:</strong> состояние #{{ s.version }}</span>
+                        <span><strong>Рабочая папка:</strong> {{ project_folder }}</span>
+                    </div>
+                    <details class="workflow-explainer">
+                        <summary>Как пользоваться и что означают результаты</summary>
+                        <ol>
+                            <li>Выберите партию. Цветные линии обозначают три морских коридора; цвет сам по себе не означает, что отправление доступно.</li>
+                            <li>В «Сценариях» измените узел и нажмите «Рассчитать сценарий». Блок «до → после» показывает изменения обработки, рейса и доставки.</li>
+                            <li>В «Математическом выборе» выберите критерий и нажмите «Пересчитать». Малиновая толстая линия — предложение по текущим условиям, ещё не принятый план.</li>
+                            <li>Подготовьте документы и отдельно примите расчётный демо-план. После этого карточка партии показывает сохранённый математический план.</li>
+                        </ol>
+                        <p>Версия программы обозначает выпуск кода. Номер состояния данных увеличивается после сохранения действий. Пересчёт рекомендации сам по себе данные не меняет. Историческая оценка задержек и математический расчёт с погодой подписаны отдельно; они могут различаться.</p>
+                    </details>
+                    {% if errors %}
+                        <div class="notice error" role="alert">
+                            {% icon 'alert' %}
+                            <div>
+                                {% for error in errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% for message in messages %}
+                        <div class="notice compact-notice" role="status">
+                            {% icon 'check' %}
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                    {% if page == 'overview' or page == 'cargo' %}
+                        {% include 'transit/overview.html' %}
+                    {% elif page == 'documents' %}
+                        {% include 'transit/documents.html' %}
+                    {% elif page == 'scenarios' %}
+                        {% include 'transit/scenarios.html' %}
+                    {% elif page == 'tracking' %}
+                        {% include 'transit/tracking.html' %}
+                    {% elif page == 'validation' %}
+                        {% include 'transit/validation.html' %}
+                    {% elif page == 'sources' %}
+                        {% include 'transit/sources.html' %}
+                    {% elif page == 'audit' %}
+                        {% include 'transit/audit.html' %}
+                    {% endif %}
+                    <footer class="app-footer">
+                        <span>
+                            {% icon 'shield' 13 %}
+                            Сценарий воспроизводим · данные и ограничения открыты
+                        </span>
+                        <button type="button" data-method>Методика и допущения</button>
+                        <button type="button" data-reset>Сбросить демо</button>
+                    </footer>
+                </main>
+            </div>
+        </div>
+        <dialog class="method-modal" id="reset-dialog" aria-labelledby="reset-title">
+            <button
+                type="button"
+                class="modal-close icon-button"
+                data-close="reset-dialog"
+                aria-label="Закрыть"
+            >
+                {% icon 'close' %}
+            </button>
+            <h2 id="reset-title">Сбросить учебный сценарий?</h2>
+            <p>
+                Будут сброшены только данные нового локального пространства. Сначала экспортируйте
+                отчёт, если хотите сохранить решения.
+            </p>
+            <form method="post">
+                {% include 'transit/action_fields.html' %}
+                <input type="hidden" name="type" value="reset" />
+                <label class="filter-check">
+                    <input type="checkbox" name="confirm_reset" required />
+                    Подтверждаю сброс учебных данных
+                </label>
+                <button type="submit" class="button primary">Сбросить демо</button>
+            </form>
+        </dialog>
+        <dialog class="method-modal" id="method-dialog" aria-labelledby="method-title">
+            <button
+                class="modal-close icon-button"
+                type="button"
+                data-close="method-dialog"
+                aria-label="Закрыть"
+            >
+                {% icon 'close' %}
+            </button>
+            <div class="eyebrow">МЕТОДИКА</div>
+            <h2 id="method-title">Как читать результаты</h2>
+            <p>
+                Грузы, очереди, расписания и история из 800 наблюдений синтетические. Регрессия
+                прогнозирует задержку обработки порта. Её точность на реальных перевозках не
+                установлена.
+            </p>
+            <p>
+                Интервал откалиброван на отдельной временной выборке; за пределами обучения не
+                показывается. Времена — МСК. События вводит оператор демо, а не AIS/GPS.
+            </p>
+            <p>
+                Предварительная проверка CT-DEMO-2026.1 — подписанный учебный процесс, не решение
+                ведомства. CO₂e — справочная оценка DESNZ2025 direct + WTT, без терминалов.
+            </p>
+            <p>
+                Альтернативный порт до погрузки означает полный подвоз заново с момента события.
+                Реальная дислокация и понесённые затраты не моделируются.
+            </p>
+            <button type="button" class="button primary" data-close="method-dialog">Понятно</button>
+        </dialog>
+    </body>
+</html>

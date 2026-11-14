@@ -1,0 +1,187 @@
+{% load transit_tags %}
+<div class="notice">
+    {% icon 'flask' 21 %}
+    <div>
+        <strong>
+            {% if s.model.origin == 'synthetic' %}
+                Проверка на синтетической истории
+            {% else %}
+                Проверка на загруженной истории
+            {% endif %}
+        </strong>
+        <p>
+            {{ s.model.warnings.0 }} Результаты ниже относятся к задержке обработки в порту, а не к точности
+            всей доставки.
+        </p>
+    </div>
+</div>
+<section class="stats-grid model-stats">
+    <button disabled class="stat-card">
+        <div>
+            <span>Ошибка модели · MAE</span>
+            {% icon 'chart' %}
+        </div>
+        <strong>{{ s.model.mae|num:2 }} ч</strong>
+        <small>Отложенные по времени наблюдения</small>
+    </button>
+    <button disabled class="stat-card">
+        <div>
+            <span>Простой базовый прогноз</span>
+            {% icon 'history' %}
+        </div>
+        <strong>{{ s.model.baselineMae|num:2 }} ч</strong>
+        <small>Средняя задержка порта по обучению</small>
+    </button>
+    <button disabled class="stat-card">
+        <div>
+            <span>Покрытие интервала</span>
+            {% icon 'shield' %}
+        </div>
+        <strong>{{ model_coverage|num }}%</strong>
+        <small>Измерено на тестовой выборке</small>
+    </button>
+    <button disabled class="stat-card">
+        <div>
+            <span>Наблюдений в истории</span>
+            {% icon 'database' %}
+        </div>
+        <strong>{{ s.historyRows }}</strong>
+        <small>4 порта · 6 часов между срезами</small>
+    </button>
+</section>
+<section class="panel">
+    <div class="panel-header">
+        <div>
+            <h2>Прогноз и наблюдаемая задержка</h2>
+            <span>Последние {{ s.model.series|length }} записей временной тестовой выборки · часы</span>
+        </div>
+        <div class="chart-legend">
+            <span>
+                <i></i>
+                Модель
+            </span>
+            <span>
+                <i></i>
+                Наблюдение
+            </span>
+            <span>
+                <i></i>
+                Базовый прогноз
+            </span>
+        </div>
+    </div>
+    <div class="model-chart">
+        <svg
+            viewBox="0 0 1080 285"
+            role="img"
+            aria-label="Задержка обработки: наблюдения, прогноз модели и базовый прогноз на тестовой истории"
+        >
+            {% for tick in chart_ticks %}
+                <g>
+                    <line
+                        x1="50"
+                        x2="1050"
+                        y1="{{ tick.y }}"
+                        y2="{{ tick.y }}"
+                        stroke="#e6ecee"
+                    />
+                    <text x="36" y="{{ tick.text_y }}" text-anchor="end" fill="#87959b" font-size="12">
+                        {{ tick.label|num:0 }}
+                    </text>
+                </g>
+            {% endfor %}
+            <polyline
+                points="{{ chart.baseline }}"
+                fill="none"
+                stroke="#bdc6cd"
+                stroke-width="2"
+                stroke-dasharray="5 4"
+            />
+            <polyline points="{{ chart.actual }}" fill="none" stroke="#acb9c2" stroke-width="2" />
+            <polyline points="{{ chart.predicted }}" fill="none" stroke="#098b94" stroke-width="2.5" />
+            {% for tick in chart_dates %}
+                <text x="{{ tick.x|stringformat:'f' }}" y="264" fill="#87959b" font-size="12">{{ tick.at|when|slice:':7' }}</text>
+            {% endfor %}
+        </svg>
+    </div>
+</section>
+<div class="two-columns">
+    <section class="panel">
+        <div class="panel-header">
+            <div>
+                <h2>Проверка без перемешивания времени</h2>
+                <span>Калибровка отделена от обучения и теста</span>
+            </div>
+        </div>
+        <div class="method-body">
+            <div class="split-bar">
+                <span style="flex: {{ s.model.trainN }}">Обучение {{ s.model.trainN }}</span>
+                <span style="flex: {{ s.model.calibrationN }}">Калибровка {{ s.model.calibrationN }}</span>
+                <span style="flex: {{ s.model.testN }}">Тест {{ s.model.testN }}</span>
+            </div>
+            <dl class="method-dl">
+                <dt>Обучение до</dt>
+                <dd>{{ s.model.trainUntil|when }}</dd>
+                <dt>Тестовая история</dt>
+                <dd>{{ s.model.testFrom|when }} — {{ s.model.testUntil|when }}</dd>
+                <dt>Используемые признаки</dt>
+                <dd>Очередь, ветер, обработка и порт</dd>
+                <dt>Полуширина портового интервала</dt>
+                <dd>{{ s.model.intervalRadius|num:2 }} ч</dd>
+            </dl>
+            <p>
+                Модель — регуляризованная линейная регрессия с нелинейным признаком ветра. Интервал
+                основан на остатках отдельной калибровочной выборки; покрытие измерено на тесте.
+            </p>
+        </div>
+    </section>
+    <section class="panel">
+        <div class="panel-header">
+            <div>
+                <h2>Своя история перевозок</h2>
+                <span>От демонстрации к проверке на ваших данных</span>
+            </div>
+        </div>
+        <div class="method-body">
+            <p>
+                Загрузите CSV с временами UTC и наблюдениями, доступными на момент прогноза. Система
+                проверит схему, диапазоны, повторы и временные границы, затем заново обучит модель.
+            </p>
+            <code class="schema-preview">at,portId,queueUnits,windMs,handlingHours,delayHours</code>
+            <form
+                method="post"
+                enctype="multipart/form-data"
+                class="history-form"
+                data-upload-submit
+            >
+                {% include 'transit/action_fields.html' %}
+                <input type="hidden" name="type" value="history" />
+                <div class="document-actions">
+                    <label class="button primary" for="history-upload">
+                        {% icon 'database' 16 %}
+                        Импортировать и проверить
+                    </label>
+                    <a class="button secondary" href="/api/export?type=history">
+                        {% icon 'download' 16 %}
+                        Образец CSV
+                    </a>
+                </div>
+                <input
+                    id="history-upload"
+                    type="file"
+                    name="history"
+                    accept=".csv,text/csv"
+                    hidden
+                />
+                <noscript>
+                    <input type="file" name="history" accept=".csv,text/csv" />
+                    <button type="submit">Импортировать CSV</button>
+                </noscript>
+            </form>
+            <small class="muted">
+                Минимум 80 строк и 20 временных отметок. Импорт не подтверждает подлинность данных.
+                Значения и единицы описаны в методике.
+            </small>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,280 @@
+{% load transit_tags %}
+<div class="documents-grid">
+    <section class="panel document-list">
+        <div class="panel-header">
+            <div>
+                <h2>Пакеты перевозок</h2>
+                <span>{{ pending }} ещё не проверены</span>
+            </div>
+        </div>
+        {% for c in s.cargo %}
+            {% with p=s.packs|get:c.id %}
+                <a
+                    class="document-item{% if c.id == cargo.id %} active{% endif %}"
+                    href="/?page=documents&amp;cargo={{ c.id }}"
+                >
+                    {% icon 'file' %}
+                    <div>
+                        <strong>{{ c.id }}</strong>
+                        <small>{{ c.name }}</small>
+                    </div>
+                    {% if p.status == 'validated' %}
+                        {% icon 'checks' 16 %}
+                    {% else %}
+                        <span class="draft-dot"></span>
+                    {% endif %}
+                </a>
+            {% endwith %}
+        {% endfor %}
+    </section>
+    <section class="panel document-editor">
+        <div class="panel-header">
+            <div>
+                <h2>Пакет {{ cargo.id }}</h2>
+                <span>{{ cargo.name }} · {{ cargo.massTon|num }} т</span>
+            </div>
+            <span class="badge {% if pack.status == 'validated' %}success{% else %}warning{% endif %}">
+                <i></i>
+                {% if pack.status == 'validated' %}
+                    Технически проверено
+                {% else %}
+                    Черновик
+                {% endif %}
+            </span>
+        </div>
+        <div class="document-body">
+            <div class="notice compact-notice">
+                {% icon 'shield' %}
+                <p>
+                    Демо-шлюз проверяет полноту и согласованность реквизитов. Это не оформление и не
+                    выпуск груза таможней.
+                </p>
+            </div>
+            <form method="post" class="document-form">
+                {% include 'transit/action_fields.html' %}
+                <input type="hidden" name="type" value="document" />
+                <div class="form-grid">
+                    <label>Номер инвойса{{ pack_form.invoice }}{{ pack_form.invoice.errors }}</label>
+                    <label>Упаковочный лист{{ pack_form.packingList }}{{ pack_form.packingList.errors }}</label>
+                    <label>Код товара · формат из 10 цифр{{ pack_form.hsCode }}{{ pack_form.hsCode.errors }}</label>
+                    <label>Референс партии{{ pack_form.reference }}{{ pack_form.reference.errors }}</label>
+                    <label>Получатель{{ pack_form.consignee }}{{ pack_form.consignee.errors }}</label>
+                    <label>Масса партии, т{{ pack_form.massTon }}{{ pack_form.massTon.errors }}</label>
+                </div>
+                <div class="document-actions">
+                    <button type="submit" class="button primary" name="submit" value="1">
+                        {% icon 'shield' 16 %}
+                        Проверить и подписать
+                    </button>
+                    <button type="submit" class="button secondary" name="submit" value="0">
+                        Сохранить черновик
+                    </button>
+                    <button type="button" class="text-button" id="fill-document-example">
+                        Заполнить демопример
+                    </button>
+                </div>
+            </form>
+            {% if pack.receipt %}
+                <div class="receipt">
+                    <div>
+                        {% icon 'shield' %}
+                        <strong>Пакет подписан демонстрационным шлюзом</strong>
+                    </div>
+                    <dl>
+                        <dt>Номер</dt>
+                        <dd>{{ pack.receipt.id }}</dd>
+                        <dt>SHA-256 пакета</dt>
+                        <dd class="hash">{{ pack.receipt.hash }}</dd>
+                        <dt>Получена</dt>
+                        <dd>{{ pack.receipt.submittedAt|when }}</dd>
+                    </dl>
+                    <button
+                        type="button"
+                        class="button secondary compact"
+                        data-verify="/api/receipt?cargoId={{ cargo.id }}"
+                    >
+                        Проверить подпись и журнал
+                    </button>
+                    <p class="proof-result" role="status"></p>
+                </div>
+            {% endif %}
+            <section class="clearance-workflow" aria-labelledby="clearance-title">
+                <div class="workflow-heading">
+                    <div>
+                        <div class="eyebrow">02 / ПРЕДВАРИТЕЛЬНОЕ ОФОРМЛЕНИЕ</div>
+                        <h3 id="clearance-title">Демонстрационная заявка</h3>
+                    </div>
+                    <span
+                        class="badge {% if application.status == 'ready_demo' %}success{% elif application.status == 'needs_changes' %}warning{% else %}neutral{% endif %}"
+                    >
+                        {{ application.status|default:'draft'|app_status }}
+                    </span>
+                </div>
+                <p class="workflow-boundary">
+                    Учебный процесс по правилам CT-DEMO-2026.1. Проверяет комплектность и
+                    согласованность записей; не рассчитывает пошлины и не выдаёт таможенное
+                    разрешение.
+                </p>
+                <ol class="clearance-steps" aria-label="Этапы предварительной проверки">
+                    <li data-done="{% if pack.status == 'validated' %}true{% else %}false{% endif %}">
+                        <span>01</span>
+                        Реквизиты
+                    </li>
+                    <li data-done="{% if application %}true{% else %}false{% endif %}">
+                        <span>02</span>
+                        Отправка
+                    </li>
+                    <li data-done="{% if application.checks %}true{% else %}false{% endif %}">
+                        <span>03</span>
+                        Правила
+                    </li>
+                    <li data-done="{% if application.status == 'ready_demo' %}true{% else %}false{% endif %}">
+                        <span>04</span>
+                        Готовность · демо
+                    </li>
+                </ol>
+                {% if pack.status != 'validated' %}
+                    <p class="workflow-hint">
+                        {% icon 'alert' 16 %}
+                        Сначала сохраните и технически проверьте актуальный пакет выше.
+                    </p>
+                {% endif %}
+                <form method="post" class="declaration-form">
+                    {% include 'transit/action_fields.html' %}
+                    <input
+                        type="hidden"
+                        name="type"
+                        value="{% if application.status == 'submitted' %}clearance_review{% else %}clearance_submit{% endif %}"
+                    />
+                    <fieldset class="declaration-fields" {% if pack.status != 'validated' or application.status == 'submitted' %}disabled{% endif %}>
+                        <legend>Данные демонстрационной декларации</legend>
+                        <div class="form-grid">
+                            <label>Страна отправления{{ declaration_form.originCountry }}{{ declaration_form.originCountry.errors }}</label>
+                            <label>Страна назначения{{ declaration_form.destinationCountry }}{{ declaration_form.destinationCountry.errors }}</label>
+                            <label>Транспортный документ{{ declaration_form.transportDocument }}{{ declaration_form.transportDocument.errors }}</label>
+                            <label>
+                                Документ о происхождении · демо{{ declaration_form.originCertificate }}{{ declaration_form.originCertificate.errors }}
+                            </label>
+                            <label>Масса в декларации, т{{ declaration_form.declaredMassTon }}{{ declaration_form.declaredMassTon.errors }}</label>
+                            <label>
+                                Стоимость партии, ₽ · демо{{ declaration_form.declaredValueRub }}{{ declaration_form.declaredValueRub.errors }}
+                            </label>
+                            <label class="declaration-description">
+                                Описание партии{{ declaration_form.description }}{{ declaration_form.description.errors }}
+                            </label>
+                        </div>
+                    </fieldset>
+                    <div class="document-actions">
+                        <button
+                            type="submit"
+                            class="button primary"
+                            {% if pack.status != 'validated' %}disabled{% endif %}
+                        >
+                            {% if application.status == 'submitted' %}
+                                {% icon 'filecheck' 16 %}
+                                Проверить заявку
+                                {% icon 'arrow' 15 %}
+                            {% else %}
+                                {% icon 'arrow' 16 %}
+                                Отправить демо-заявку
+                            {% endif %}
+                        </button>
+                        <button
+                            type="button"
+                            class="text-button"
+                            id="fill-declaration-example"
+                            {% if pack.status != 'validated' or application.status == 'submitted' %}disabled{% endif %}
+                        >
+                            Заполнить пример декларации
+                        </button>
+                    </div>
+                </form>
+                {% if application %}
+                    <div class="clearance-version">
+                        Редакция {{ application.revision }}
+                        {% if application.submittedAt %}
+                            · отправлена {{ application.submittedAt|when }} МСК
+                        {% endif %}
+                    </div>
+                {% endif %}
+                {% if application.checks %}
+                    <div class="clearance-results" aria-label="Результаты учебных правил">
+                        <h4>
+                            {% if application.status == 'ready_demo' %}
+                                {% icon 'checks' %}
+                                Условные правила пройдены
+                            {% else %}
+                                {% icon 'alert' %}
+                                Замечания к заявке
+                            {% endif %}
+                        </h4>
+                        {% for check in application.checks %}
+                            <div
+                                class="clearance-check {% if check.passed %}passed{% else %}issue{% endif %}"
+                            >
+                                {% if check.passed %}
+                                    {% icon 'check' 15 %}
+                                {% else %}
+                                    {% icon 'alert' 15 %}
+                                {% endif %}
+                                <div>
+                                    <strong>
+                                        <code>{{ check.id }}</code>
+                                        {{ check.label }}
+                                    </strong>
+                                    <p>{{ check.message }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% if application.decision %}
+                    <div class="clearance-decision">
+                        <div>
+                            {% icon 'shield' %}
+                            <strong>Подписанное решение демо-шлюза</strong>
+                        </div>
+                        <code>{{ application.decision.id }}</code>
+                        <button
+                            type="button"
+                            class="button secondary compact"
+                            data-verify="/api/clearance?cargoId={{ cargo.id }}"
+                        >
+                            Проверить решение демо-шлюза
+                        </button>
+                        <p class="proof-result" role="status"></p>
+                    </div>
+                {% endif %}
+                {% if application.history %}
+                    <details class="clearance-history">
+                        <summary>
+                            {% icon 'history' 15 %}
+                            История редакций · {{ application.history|length }} событий
+                        </summary>
+                        <ol>
+                            {% for item in application.history reversed %}
+                                <li>
+                                    <strong>Редакция {{ item.revision }} · {{ item.status|app_status }}</strong>
+                                    <span>{{ item.at|when }}</span>
+                                    <p>{{ item.detail }}</p>
+                                </li>
+                            {% endfor %}
+                        </ol>
+                    </details>
+                {% endif %}
+            </section>
+            <div class="editor-links">
+                <a href="/api/export?type=pack&amp;cargo={{ cargo.id }}">
+                    {% icon 'download' 14 %}
+                    Скачать реквизиты JSON
+                </a>
+                <label for="pack-json-upload">
+                    {% icon 'database' 14 %}
+                    Загрузить реквизиты JSON
+                </label>
+                <input id="pack-json-upload" type="file" accept=".json,application/json" hidden />
+            </div>
+            <p id="pack-upload-status" class="proof-result" role="status"></p>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,49 @@
+{% load transit_tags %}
+<section class="panel audit-panel">
+    <div class="panel-header">
+        <div>
+            <h2>
+                История действий
+                <span class="count">{{ s.audit|length }}</span>
+            </h2>
+            <span>События связаны хешами. Это локальный проверяемый журнал, не блокчейн.</span>
+        </div>
+        <a class="button secondary" href="/api/export">
+            {% icon 'download' 15 %}
+            Выгрузить журнал
+        </a>
+    </div>
+    {% if s.audit %}
+        <div class="audit-list">
+            {% for e in s.audit reversed %}
+                <article>
+                    <span class="audit-dot">{% icon 'check' 14 %}</span>
+                    <div>
+                        <header>
+                            <strong>{{ e.action }}</strong>
+                            <time>{{ e.at|when }}</time>
+                        </header>
+                        <p>{{ e.detail }}</p>
+                        <div>
+                            <span class="audit-ref">{{ e.cargoId }}</span>
+                            <code title="{{ e.hash }}">SHA256 {{ e.hash|slice:':16' }}…</code>
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            {% icon 'history' 30 %}
+            <h3>Пока нет решений</h3>
+            <p>
+                Примените сценарий, проверьте документы или выберите план. Здесь появятся основания и
+                результат действия.
+            </p>
+            <a class="button primary" href="/?page=cargo">
+                Перейти к перевозкам
+                {% icon 'arrow' 15 %}
+            </a>
+        </div>
+    {% endif %}
+</section>

@@ -1,0 +1,108 @@
+{% load transit_tags %}
+<section class="panel shipments-panel">
+    <div class="panel-header">
+        <div>
+            <h2>
+                Перевозки коридора
+                <span class="count">{{ rows|length }}</span>
+            </h2>
+            <span>Выберите груз, чтобы сравнить его варианты</span>
+        </div>
+        <div class="table-controls">
+            <a href="/operations" class="button secondary compact">Управление партиями</a>
+            <form method="get" class="search-field" data-search-form>
+                <input type="hidden" name="page" value="cargo" />
+                <input
+                    type="hidden"
+                    name="risk"
+                    value="{% if only_risk %}1{% else %}0{% endif %}"
+                />
+                {% icon 'search' 15 %}
+                <input
+                    name="q"
+                    value="{{ query }}"
+                    aria-label="Найти груз"
+                    placeholder="Номер или название груза"
+                />
+            </form>
+            <form method="get">
+                <input type="hidden" name="page" value="cargo" />
+                <input type="hidden" name="q" value="{{ query }}" />
+                <button
+                    class="button secondary compact{% if only_risk %} is-active{% endif %}"
+                    type="submit"
+                    name="risk"
+                    value="{% if only_risk %}0{% else %}1{% endif %}"
+                    aria-pressed="{% if only_risk %}true{% else %}false{% endif %}"
+                >
+                    {% icon 'sliders' 14 %}
+                    {% if only_risk %}
+                        Только риски
+                    {% else %}
+                        Все перевозки
+                    {% endif %}
+                </button>
+            </form>
+        </div>
+    </div>
+    <div class="table-scroll">
+        <table>
+            <thead>
+                <tr>
+                    <th>Перевозка / груз</th>
+                    <th>Текущий вариант</th>
+                    <th>Плановый срок</th>
+                    <th>Расчётное прибытие</th>
+                    <th>Состояние</th>
+                    <th aria-label="Выбрать"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr
+                        class="{% if row.cargo.id == cargo.id %}selected-row{% endif %}"
+                        data-go="/?page={{ page }}&amp;cargo={{ row.cargo.id }}"
+                    >
+                        <td>
+                            <a
+                                class="cargo-link"
+                                href="/?page={{ page }}&amp;cargo={{ row.cargo.id }}"
+                            >
+                                {{ row.cargo.id }}
+                            </a>
+                            <small>{{ row.cargo.name }} · {{ row.cargo.massTon|num }} т</small>
+                            <small>{% if row.cargo.source == 'manual' %}Ввод пользователя · {{ row.cargo.externalReference }}{% else %}Учебный пример{% endif %}</small>
+                        </td>
+                        <td>
+                            <strong class="table-route">{{ row.forecast.routeName }}</strong>
+                            <small>
+                                {% if row.cargo.acceptedRoute %}
+                                    Демонстрационный план принят
+                                {% else %}
+                                    Исходный план
+                                {% endif %}
+                            </small>
+                        </td>
+                        <td>{{ row.cargo.dueAt|when }}</td>
+                        <td class="{% if row.forecast.lateHours > 0 %}negative{% endif %}">{{ row.forecast.arrival|when }}</td>
+                        <td>
+                            <span class="badge {{ row.kind }}">
+                                <i></i>
+                                {{ row.label }}
+                            </span>
+                            <small class="shipment-stage">{{ row.cargo|cargo_stage }}</small>
+                        </td>
+                        <td>{% icon 'chevron' 16 %}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if not rows %}
+            <div class="empty-state">
+                {% icon 'search' 25 %}
+                <p>Перевозки не найдены. Измените поиск или фильтр.</p>
+                <a href="/?page=cargo">Сбросить фильтры</a>
+            </div>
+        {% endif %}
+    </div>
+</section>

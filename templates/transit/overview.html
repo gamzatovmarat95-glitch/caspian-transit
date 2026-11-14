@@ -1,0 +1,310 @@
+{% load transit_tags %}
+<div class="operations-layout">
+    <section class="stats-grid" aria-label="Сводка коридора">
+        <button class="stat-card" disabled>
+            <div>
+                <span>Перевозки</span>
+                {% icon 'container' %}
+            </div>
+            <strong>{{ s.cargo|length|stringformat:'02d' }}</strong>
+            <small>В текущем сценарии</small>
+        </button>
+        <button class="stat-card amber" type="submit" form="risk-nav">
+            <div>
+                <span>Требуют внимания</span>
+                {% icon 'alert' %}
+            </div>
+            <strong>{{ risk|stringformat:'02d' }}</strong>
+            <small>
+                Показать риски срока
+                {% icon 'external' 12 %}
+            </small>
+        </button>
+        <button class="stat-card" type="submit" form="documents-nav">
+            <div>
+                <span>Документы</span>
+                {% icon 'filecheck' %}
+            </div>
+            <strong>{{ pending|stringformat:'02d' }}</strong>
+            <small>
+                Ожидают проверки
+                {% icon 'external' 12 %}
+            </small>
+        </button>
+        <button class="stat-card" type="submit" form="sources-nav">
+            <div>
+                <span>Портовые узлы</span>
+                {% icon 'port' %}
+            </div>
+            <strong>{{ s.ports|length|stringformat:'02d' }}</strong>
+            <small>
+                Россия — Иран
+                {% icon 'external' 12 %}
+            </small>
+        </button>
+    </section>
+    <div class="scenario-strip">
+        <div>
+            {% icon 'cloud' 16 %}
+            <strong>{{ s.scenario }}</strong>
+            <span>Расписания, партии и очереди смоделированы</span>
+        </div>
+        <a href="/?page=scenarios&amp;cargo={{ cargo.id }}">
+            Изменить условия
+            {% icon 'arrow' 14 %}
+        </a>
+    </div>
+    {% if page == 'cargo' %}
+        {% include 'transit/cargo_table.html' %}
+    {% endif %}
+    <div class="shipment-focus">
+        <span class="focus-icon">{% icon 'container' 20 %}</span>
+        <div class="focus-cargo">
+            <span>
+                {% if cargo.progress %}
+                    {{ stage_label }}
+                {% else %}
+                    В РАБОТЕ
+                {% endif %}
+            </span>
+            <strong>
+                {{ cargo.id }}
+                <small>{{ cargo.name }} · {{ cargo.massTon|num }} т</small>
+            </strong>
+        </div>
+        <div class="focus-corridor">
+            <span>Волгоград</span>
+            <span class="corridor-rule">
+                <i></i>
+                {% icon 'ship' 15 %}
+                <i></i>
+            </span>
+            <span>Тегеран</span>
+        </div>
+        <a class="focus-docs" href="/?page=tracking&amp;cargo={{ cargo.id }}">
+            {% icon 'radio' 16 %}
+            События
+            {% icon 'external' 14 %}
+        </a>
+        <a class="focus-docs" href="/?page=documents&amp;cargo={{ cargo.id }}">
+            {% icon 'file' 16 %}
+            Документы
+            {% icon 'external' 14 %}
+        </a>
+    </div>
+    <div class="overview-grid">
+        {% include 'transit/map.html' %}
+        <section class="panel decision-panel" id="decision">
+            <div class="panel-header">
+                <div>
+                    <h2>{% if chosen.routeId != base.routeId %}Просмотр другого коридора{% elif cargo.planningMethod == 'mathematical' %}Принятый математический план{% elif cargo.acceptedRoute %}Принятый базовый демо-план{% else %}Базовая оценка доставки{% endif %}</h2>
+                    <span>{{ cargo.id }} · {{ cargo.name }}</span>
+                </div>
+                <span class="badge {% if chosen.feasible and not chosen.lateHours %}success{% else %}warning{% endif %}">
+                    <i></i>
+                    {% if chosen.feasible and not chosen.lateHours %}
+                        В срок
+                    {% else %}
+                        Требует внимания
+                    {% endif %}
+                </span>
+            </div>
+            <div class="decision-summary">
+                <div class="decision-icon">{% icon 'compare' 21 %}</div>
+                <div>
+                    <strong>
+                        {% if not chosen.feasible %}
+                            В горизонте нет доступного окна
+                        {% elif chosen.lateHours > 0 %}
+                            Этот вариант опаздывает на {{ chosen.lateHours|num }} ч
+                        {% else %}
+                            Проверьте готовность стыковки
+                        {% endif %}
+                    </strong>
+                    <p>{{ chosen.reasons.0|default:'Сравните стоимость и срок допустимых вариантов.' }}</p>
+                </div>
+            </div>
+            <div class="forecast-band">
+                {% icon 'clock' 14 %}
+                <div>
+                    {% if chosen.actualArrival %}
+                        <strong>{{ chosen.arrival|when }} · доставлено</strong>
+                        <span>Отметка демо-оператора, не прогноз модели</span>
+                    {% elif chosen.calculationMethod == 'mathematical' and chosen.feasible %}
+                        <strong>{{ chosen.arrival|when }} · номинальный ETA</strong>
+                        <span>Тот же математический расчёт и погодный профиль, что в принятом отчёте</span>
+                    {% elif chosen.lowArrival != None and chosen.highArrival != None %}
+                        <strong>{{ chosen.lowArrival|when }} — {{ chosen.highArrival|when }}</strong>
+                        <span>Диапазон прибытия по синтетической истории модели</span>
+                    {% else %}
+                        <strong>
+                            {% if chosen.feasible %}
+                                Прибытие без оценки диапазона
+                            {% else %}
+                                Нет доступного окна
+                            {% endif %}
+                        </strong>
+                        <span>
+                            Для этих условий интервал не рассчитан. Проверьте ограничения и данные.
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+            <form class="route-options" method="get">
+                <input type="hidden" name="page" value="{{ page }}" />
+                <input type="hidden" name="cargo" value="{{ cargo.id }}" />
+                {% for f in forecasts %}
+                    <button
+                        type="submit"
+                        name="route"
+                        value="{{ f.routeId }}"
+                        class="route-option{% if f.routeId == chosen.routeId %} selected{% endif %}"
+                        aria-label="Выбрать маршрут {{ f.routeName }}"
+                        aria-pressed="{% if f.routeId == chosen.routeId %}true{% else %}false{% endif %}"
+                    >
+                        <span class="route-radio"><i></i></span>
+                        <div class="route-option-main">
+                            <strong>
+                                {{ f.routeName }}
+                                {% if f.routeId == recommended.routeId %}
+                                    <em>{% if cargo.planningMethod == 'mathematical' %}По сохранённому расчёту{% else %}По исторической оценке{% endif %}</em>
+                                {% endif %}
+                            </strong>
+                            <span>
+                                {{ f.arrival|when }}
+                                {% if f.feasible %}
+                                    ·
+                                    {% if f.lateHours > 0 %}
+                                        +{{ f.lateHours|num }} ч к сроку
+                                    {% else %}
+                                        в пределах срока
+                                    {% endif %}
+                                {% else %}
+                                    · нет допустимого отправления
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="route-cost">
+                            <strong>{{ f.costRub|thousands|num }} тыс. ₽</strong>
+                            <span>{{ f.co2Kg|thousands|num:2 }} т CO₂e</span>
+                        </div>
+                    </button>
+                {% endfor %}
+            </form>
+            <div class="decision-impact">
+                <div>
+                    <span>Изменение срока</span>
+                    <strong>
+                        {% if time_change != None %}
+                            {{ time_change|num }} ч
+                            {% if chosen.arrival < base.arrival %}
+                                раньше
+                            {% elif chosen.arrival > base.arrival %}
+                                позже
+                            {% else %}
+                                · без изменений
+                            {% endif %}
+                        {% else %}
+                            Нет оценки
+                        {% endif %}
+                    </strong>
+                </div>
+                <div>
+                    <span>Изменение затрат</span>
+                    <strong>
+                        {% if cost_change > 0 %}
+                            +
+                        {% endif %}
+                        {{ cost_change|money }}
+                    </strong>
+                </div>
+            </div>
+            <div class="decision-footer">
+                {% if route_locked %}
+                    <a class="button secondary full" href="/?page=tracking&amp;cargo={{ cargo.id }}">
+                        {% icon 'radio' 16 %}
+                        Показать движение груза
+                        {% icon 'arrow' 15 %}
+                    </a>
+                {% elif pack.status != 'validated' or application.status != 'ready_demo' %}
+                    <a class="button primary full" href="/?page=documents&amp;cargo={{ cargo.id }}">
+                        {% icon 'filecheck' 16 %}
+                        Подготовить документы
+                        {% icon 'arrow' 15 %}
+                    </a>
+                {% else %}
+                    <form method="post">
+                        {% include 'transit/action_fields.html' %}
+                        <input type="hidden" name="type" value="accept" />
+                        <input type="hidden" name="routeId" value="{{ chosen.routeId }}" />
+                        <button
+                            class="button primary full"
+                            type="submit"
+                            {% if not can_accept or cargo.planningMethod == 'mathematical' %}disabled{% endif %}
+                        >
+                            {% icon 'check' 16 %}
+                            Принять базовый демо-план
+                            {% icon 'arrow' 15 %}
+                        </button>
+                    </form>
+                {% endif %}
+                <p>
+                    {% if cargo.planningMethod == 'mathematical' %}Обновление математического плана выполняется кнопкой в блоке расчёта с погодой.{% else %}Это базовая оценка по истории задержек, а не новая рекомендация с внешним прогнозом. Для неё используйте математический блок под картой.{% endif %} Принятие занимает условное место в демо-расписании.
+                </p>
+            </div>
+        </section>
+    </div>
+    <section class="panel timeline-panel">
+        <div class="panel-header">
+            <div>
+                <h2>
+                    Путь партии
+                    <span class="subtle">{{ chosen.routeName }}</span>
+                </h2>
+                <span>Срок получателя: {{ cargo.dueAt|when }} · МСК</span>
+            </div>
+            <span class="badge {% if chosen.lateHours > 0 %}warning{% else %}neutral{% endif %}">
+                <i></i>
+                {% if chosen.feasible %}
+                    {{ timeline_total|num }} ч в цепочке
+                {% else %}
+                    Нет допустимого отправления
+                {% endif %}
+            </span>
+        </div>
+        <div class="timeline-legs">
+            {% for leg in display_legs %}
+                <div class="timeline-leg {{ leg.mode }}" style="flex: {{ leg.weight|stringformat:'f' }}">
+                    <div>
+                        <span class="timeline-node">
+                            {% if leg.mode == 'port' %}
+                                {% icon 'package' 15 %}
+                            {% elif leg.mode == 'sea' %}
+                                {% icon 'ship' 15 %}
+                            {% else %}
+                                {% icon leg.mode 15 %}
+                            {% endif %}
+                        </span>
+                        <span class="timeline-connector"></span>
+                    </div>
+                    <strong>{{ leg.label }}</strong>
+                    <small>{{ leg.end|sub:leg.start|hours|num }} ч</small>
+                    <span>{{ leg.end|when }}</span>
+                    <p>{{ leg.detail }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% if page == 'overview' %}
+        {% include 'transit/cargo_table.html' %}
+    {% endif %}
+</div>
+<form id="risk-nav" hidden method="get">
+    <input name="page" value="cargo" />
+    <input name="risk" value="1" />
+</form>
+<form id="documents-nav" hidden method="get">
+    <input name="page" value="documents" />
+    <input name="cargo" value="{{ cargo.id }}" />
+</form>
+<form id="sources-nav" hidden method="get"><input name="page" value="sources" /></form>

@@ -1,0 +1,15 @@
+{% load transit_tags %}
+<form class="tracking-cargo-tabs" method="get" aria-label="Партия для отслеживания">
+    <input type="hidden" name="page" value="{{ page }}" />
+    {% for c in s.cargo %}
+        <button
+            type="submit"
+            name="cargo"
+            value="{{ c.id }}"
+            aria-pressed="{% if c.id == cargo.id %}true{% else %}false{% endif %}"
+        >
+            {% icon 'container' 14 %}
+            <span>{{ c.id }}<small>{{ c|cargo_stage }}</small></span>
+        </button>
+    {% endfor %}
+</form>

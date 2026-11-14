@@ -1,0 +1,7 @@
+{% extends 'transit/operations-base.html' %}{% block content %}
+<h1>Команда и доступ</h1><p>{{ request.user.username }} · {{ member.get_role_display }} · пространство #{{ member.workspace_id }}</p>
+<form method="post" class="panel">{% csrf_token %}<input type="hidden" name="action" value="switch"><label>Рабочее пространство<select name="workspace">{% for item in workspaces %}<option value="{{ item.workspace_id }}" {% if item.workspace_id == member.workspace_id %}selected{% endif %}>#{{ item.workspace_id }} · {{ item.workspace.owner }} · {{ item.get_role_display }}</option>{% endfor %}</select></label><button>Переключить</button></form>
+<section><h2>Участники</h2><ul>{% for item in members %}<li>{{ item.user.username }} — {{ item.get_role_display }}</li>{% endfor %}</ul></section>
+{% if member.role == 'owner' %}<form method="post" class="panel">{% csrf_token %}<h2>Выдать или отозвать доступ</h2><p>Участник сначала регистрирует аккаунт на этом сервере. Письма и приглашения не отправляются.</p><label>Имя аккаунта<input name="username" required maxlength="150"></label><label>Роль<select name="role"><option value="operator">Логист — просмотр и изменения</option><option value="viewer">Наблюдатель — только просмотр</option></select></label><button name="action" value="add">Сохранить доступ</button> <button name="action" value="remove">Отозвать доступ</button></form>{% endif %}
+<form method="post" action="/accounts/logout">{% csrf_token %}<button>Выйти</button></form>
+{% endblock %}

@@ -1,0 +1,238 @@
+{% load transit_tags %}
+<div class="tracking-workspace">
+    {% include 'transit/cargo_tabs.html' %}
+    <section class="panel tracking-summary">
+        <div class="panel-header">
+            <div>
+                <h2>{{ cargo.id }} · {{ cargo.name }}</h2>
+                <span>{{ base.routeName }} · {{ cargo.massTon|num }} т</span>
+            </div>
+            <span class="badge neutral">События демо-оператора</span>
+        </div>
+        <div class="tracking-facts">
+            <div>
+                <span>План и срок партии</span>
+                <strong>{{ cargo.dueAt|when }} МСК</strong>
+                <small>
+                    {% if cargo.acceptedRoute %}
+                        Демонстрационный план принят
+                    {% else %}
+                        Исходный сценарный план
+                    {% endif %}
+                </small>
+            </div>
+            <div>
+                <span>Последняя отметка</span>
+                <strong>{{ stage_label }}</strong>
+                <small>
+                    {% if cargo.progress %}
+                        {{ cargo.progress.modelAt|when }} МСК · время сценария
+                    {% else %}
+                        Данных фактического перевозчика нет
+                    {% endif %}
+                </small>
+            </div>
+            <div>
+                <span>
+                    {% if base.actualArrival %}
+                        Отметка доставки демо-оператора
+                    {% else %}
+                        Обновлённый прогноз прибытия
+                    {% endif %}
+                </span>
+                <strong>{{ base.arrival|when }} МСК</strong>
+                <small>Сценарное опоздание: {{ base.lateHours|num }} ч</small>
+            </div>
+        </div>
+        <ol class="tracking-stages">
+            {% for stage in stages %}
+                <li data-state="{{ stage.state }}">
+                    <i></i>
+                    {{ stage.label }}
+                </li>
+            {% endfor %}
+        </ol>
+    </section>
+    {% if stale %}
+        <div class="notice tracking-stale">
+            {% icon 'alert' %}
+            <p>
+                После события доступное отправление изменилось. Примите актуальный слот перед погрузкой.
+            </p>
+            <a class="text-button" href="/?page=overview&amp;cargo={{ cargo.id }}">
+                К планированию
+                {% icon 'arrow' 14 %}
+            </a>
+        </div>
+    {% endif %}
+    <div class="tracking-grid">
+        <section class="panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Учебный пульт событий</h2>
+                    <span>Отметка меняет состояние и расчёт, а не только подпись на карте</span>
+                </div>
+                {% icon 'radio' %}
+            </div>
+            <div class="event-controls">
+                {% for control in event_controls %}
+                    <form method="post">
+                        {% include 'transit/action_fields.html' %}
+                        <input type="hidden" name="type" value="cargo_event" />
+                        <input type="hidden" name="kind" value="{{ control.kind }}" />
+                        <input type="hidden" name="atHours" value="{{ control.at|stringformat:'f' }}" />
+                        {% for key,value in control.params.items %}
+                            <input type="hidden" name="{{ key }}" value="{{ value }}" />
+                        {% endfor %}
+                        <button
+                            type="submit"
+                            aria-label="{{ control.label }}"
+                            {% if control.disabled %}disabled{% endif %}
+                        >
+                            <span>{{ forloop.counter|stringformat:'02d' }}</span>
+                            <strong>{{ control.label }}</strong>
+                            {% icon 'arrow' 15 %}
+                            <small>
+                                {% if control.time != None %}
+                                    {{ control.time|when }} МСК
+                                {% else %}
+                                    Недоступно в этом состоянии
+                                {% endif %}
+                            </small>
+                        </button>
+                    </form>
+                {% endfor %}
+            </div>
+            <p class="tracking-note">
+                Кнопки создают события демонстрационного оператора. Реальный AIS/GPS и сообщения
+                перевозчиков не подключены. «Время сценария» отдельно от времени записи события.
+            </p>
+        </section>
+        <section class="panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Изменение после события</h2>
+                    <span>
+                        {% if last_event %}
+                            {{ last_event_label }}
+                        {% else %}
+                            Выберите событие для сравнения
+                        {% endif %}
+                    </span>
+                </div>
+                {% icon 'clock' %}
+            </div>
+            {% if last_event %}
+                <div class="event-impact">
+                    <div class="event-impact-number">
+                        <span>Сдвиг расчётного прибытия</span>
+                        <strong>
+                            {% if event_eta_change != None %}
+                                {% if event_eta_change > 0 %}
+                                    +
+                                {% endif %}
+                                {{ event_eta_change|num }} ч
+                            {% else %}
+                                Нет оценки
+                            {% endif %}
+                        </strong>
+                    </div>
+                    <div class="table-scroll">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Показатель</th>
+                                    <th>До</th>
+                                    <th>После</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Отправление</td>
+                                    <td>{{ last_event.before.departure|when }}</td>
+                                    <td>{{ last_event.after.departure|when }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Прибытие</td>
+                                    <td>{{ last_event.before.arrival|when }}</td>
+                                    <td>{{ last_event.after.arrival|when }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Допустимость</td>
+                                    <td>
+                                        {% if last_event.before.feasible %}
+                                            Есть вариант
+                                        {% else %}
+                                            Нет окна
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if last_event.after.feasible %}
+                                            Есть вариант
+                                        {% else %}
+                                            Нет окна
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Затраты, тыс. ₽</td>
+                                    <td>{{ last_event.before.costRub|thousands|num }}</td>
+                                    <td>{{ last_event.after.costRub|thousands|num }}</td>
+                                </tr>
+                                <tr>
+                                    <td>CO₂e, т</td>
+                                    <td>{{ last_event.before.co2Kg|thousands|num }}</td>
+                                    <td>{{ last_event.after.co2Kg|thousands|num }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="tracking-note">
+                        Затраты и выбросы остаются сценарными оценками; это не счёт перевозчика и не
+                        измеренный эффект внедрения.
+                    </p>
+                    <a class="button secondary" href="/?page=overview&amp;cargo={{ cargo.id }}">
+                        Сравнить альтернативные планы
+                        {% icon 'arrow' 15 %}
+                    </a>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    {% icon 'radio' 26 %}
+                    <p>После первой отметки здесь появится её влияние на прогноз.</p>
+                </div>
+            {% endif %}
+        </section>
+    </div>
+    <section class="panel">
+        <div class="panel-header">
+            <div>
+                <h2>История движения</h2>
+                <span>Отдельные времена, источник и влияние каждого события</span>
+            </div>
+            <span class="count">{{ events|length }}</span>
+        </div>
+        {% if events %}
+            <ol class="cargo-event-list">
+                {% for e in display_events %}
+                    <li>
+                        <span class="cargo-event-dot"></span>
+                        <div>
+                            <header>
+                                <strong>{{ e.label }}</strong>
+                                <span>{{ e.happenedAt|when }} МСК · сценарий</span>
+                            </header>
+                            <p>{{ e.detail }}</p>
+                            <small>Источник: демо-оператор · записано {{ e.recordedAt|when }} МСК</small>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ol>
+        {% else %}
+            <div class="empty-state">
+                {% icon 'radio' 26 %}
+                <p>Отметок движения ещё нет. Плановые этапы не выдаются за наблюдения.</p>
+            </div>
+        {% endif %}
+    </section>
+</div>

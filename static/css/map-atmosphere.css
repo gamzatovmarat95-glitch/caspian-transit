@@ -1,0 +1,384 @@
+/* Display of measured/modelled inputs. All animation is optional. */
+.route-explainer {
+  padding: 16px 18px;
+  border-top: 1px solid #d5e2e7;
+  color: #47636f;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.route-explainer p {
+  margin: 8px 0;
+}
+.route-explainer strong {
+  color: #254958;
+}
+.route-explainer summary {
+  cursor: pointer;
+  color: #254958;
+}
+.route-map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-bottom: 12px;
+}
+.route-map-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.route-key {
+  display: inline-block;
+  width: 25px;
+  border-top: 3px solid;
+}
+.route-key.route-blue {
+  color: #1769e0;
+}
+.route-key.route-purple {
+  color: #7436ce;
+}
+.route-key.route-orange {
+  color: #d95b10;
+}
+.route-key.calculated {
+  color: #df0879;
+  border-top-width: 6px;
+}
+.route-key.alternative {
+  color: #7d8793;
+  border-top-style: dashed;
+}
+.route-chain {
+  padding: 9px 12px;
+  background: #f1f6f7;
+  border-radius: 5px;
+  font-weight: 600;
+}
+.weather-view-switch {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 9px 14px;
+  background: #f7faf9;
+  border-bottom: 1px solid #d5e2e7;
+}
+.weather-view-switch button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 11px;
+  color: #55727e;
+  font:
+    600 12px "Segoe UI",
+    Arial,
+    sans-serif;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+}
+.weather-view-switch button[aria-pressed="true"] {
+  background: white;
+  border-color: #b7cdd6;
+  color: #1a5469;
+  box-shadow: 0 1px 3px #1d475510;
+}
+.windy-view {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 25;
+  background: #173e4f;
+}
+.windy-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  color: #e7f2f5;
+  background: #163847;
+  font-size: 12px;
+}
+.windy-toolbar label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+.windy-toolbar select {
+  padding: 4px 9px;
+  color: #163b4b;
+  background: white;
+  border: 0;
+  border-radius: 4px;
+  font: inherit;
+}
+.windy-toolbar a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #e7f2f5;
+}
+#windy-frame {
+  display: block;
+  width: 100%;
+  min-height: 0;
+  flex: 1;
+  border: 0;
+}
+#marine-frame {
+  display: block;
+  width: 100%;
+  min-height: 0;
+  flex: 1;
+  border: 0;
+}
+#corridor-map.marine-active > :not(.marine-view) {
+  visibility: hidden;
+  pointer-events: none;
+}
+#corridor-map.windy-active > :not(.windy-view) {
+  visibility: hidden;
+  pointer-events: none;
+}
+.windy-active .wind-flow-trail {
+  animation-play-state: paused !important;
+}
+.windy-provider-note {
+  font-size: 11px;
+  color: #57727f;
+  line-height: 1.6;
+  grid-column: 1 / -1;
+  order: 2;
+  padding: 0 4px;
+}
+.live-map-tools {
+  position: absolute;
+  top: 64px;
+  left: 16px;
+  right: 16px;
+  z-index: 8;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  width: fit-content;
+  max-width: calc(100% - 32px);
+  padding: 5px;
+  border: 1px solid #bdd0d8;
+  border-radius: 10px;
+  background: #fffef9ed;
+  box-shadow: 0 3px 14px #183f5014;
+  backdrop-filter: blur(8px);
+}
+.live-map-tools button,
+.live-map-tools a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 30px;
+  padding: 5px 9px;
+  border: 0;
+  border-radius: 6px;
+  color: #315569;
+  font:
+    600 11px "Segoe UI",
+    Arial,
+    sans-serif;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+}
+.live-map-tools button[aria-pressed="true"] {
+  background: #e1edf1;
+  color: #154960;
+}
+.live-map-tools button[aria-pressed="false"] {
+  color: #748995;
+}
+.live-map-tools a {
+  border-left: 1px solid #d7e2e7;
+  color: #ab5a37;
+}
+.live-wind-legend {
+  position: absolute;
+  left: 18px;
+  bottom: 159px;
+  z-index: 7;
+  width: 214px;
+  padding: 10px 12px;
+  border: 1px solid #c2d3da;
+  border-radius: 9px;
+  background: #fffffff0;
+  box-shadow: 0 2px 10px #21465412;
+  pointer-events: none;
+}
+.live-wind-legend > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 7px;
+}
+.live-wind-legend strong {
+  font-size: 9px;
+  letter-spacing: 0.7px;
+  color: #35596c;
+}
+.live-wind-legend span,
+.live-wind-legend small {
+  font-size: 9px;
+  color: #5e7885;
+}
+.live-wind-scale {
+  height: 6px;
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    #479cc3,
+    #258ba0,
+    #329c87,
+    #c3a04a,
+    #ca7547,
+    #be4f5c
+  );
+}
+.live-wind-ticks {
+  display: flex;
+  justify-content: space-between;
+  margin: 3px 0 5px;
+}
+.live-map-summary {
+  position: absolute;
+  left: 18px;
+  bottom: 133px;
+  z-index: 7;
+  max-width: calc(100% - 80px);
+  padding: 4px 8px;
+  border-radius: 5px;
+  background: #f9fcfce8;
+  color: #466472;
+  font-size: 10px;
+  pointer-events: none;
+}
+.wind-glyph {
+  display: block;
+  overflow: visible;
+  filter: drop-shadow(0 1px 2px #fff8);
+}
+.wind-flow-trail {
+  stroke-dasharray: 3 8;
+  animation-name: caspian-wind-flow;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+@keyframes caspian-wind-flow {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -22;
+  }
+}
+.live-wind-glyph-marker {
+  display: block;
+  position: relative;
+  width: 58px;
+  height: 58px;
+  transform: translate(-50%, -50%);
+}
+.live-wind-glyph-marker > svg {
+  width: 58px;
+  height: 58px;
+}
+.wind-value-label {
+  position: absolute;
+  top: 40px;
+  left: 42px;
+  padding: 3px 7px;
+  border: 1px solid #b8ced8;
+  border-radius: 6px;
+  background: #fffffff2;
+  color: #254f63;
+  font:
+    600 11px/1.3 "Segoe UI",
+    Arial,
+    sans-serif;
+  white-space: nowrap;
+}
+.live-weather-card {
+  border-top: 3px solid var(--wind-color, #258ba0);
+}
+.live-weather-card strong {
+  color: var(--wind-color, #1c6275);
+}
+.live-source-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  margin: 14px 0;
+  padding: 10px 12px;
+  border: 1px solid #dce6e9;
+  border-radius: 7px;
+  background: #f6f9f9;
+  font-size: 12px;
+}
+.live-source-controls > span {
+  color: #69818d;
+  margin-right: 5px;
+}
+.live-source-controls button {
+  padding: 5px 9px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  color: #55717d;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+.live-source-controls button[aria-pressed="true"] {
+  border-color: #aac4cd;
+  background: white;
+  color: #24586c;
+}
+.live-source-controls a {
+  margin-left: auto;
+  color: #a35b38;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+@media (max-width: 700px) {
+  .live-map-tools {
+    left: 10px;
+    right: 10px;
+    max-width: calc(100% - 20px);
+    gap: 1px;
+  }
+  .live-map-tools button,
+  .live-map-tools a {
+    padding: 5px 7px;
+    font-size: 10px;
+  }
+  .live-wind-legend {
+    left: 12px;
+    bottom: 190px;
+    width: 190px;
+  }
+  .live-map-summary {
+    left: 12px;
+    bottom: 165px;
+    font-size: 9px;
+  }
+  .live-body {
+    padding: 14px;
+  }
+  .live-source-controls a {
+    margin-left: 0;
+  }
+}

@@ -1,0 +1,96 @@
+{% load transit_tags %}
+<section class="panel">
+    <div class="panel-header">
+        <div>
+            <h2>Реестр данных</h2>
+            <span>Важное разделение: факт, внешний прогноз, сценарий</span>
+        </div>
+        {% icon 'shield' %}
+    </div>
+    <div class="sources-grid">
+        {% for source in s.sources %}
+            <article>
+                <div>
+                    {% icon 'database' %}
+                    <span class="badge {% if source.kind == 'Синтетика' or source.kind == 'Сценарий' %}warning{% else %}neutral{% endif %}">
+                        <i></i>
+                        {{ source.kind }}
+                    </span>
+                </div>
+                <h3>{{ source.label }}</h3>
+                <p>{{ source.note }}</p>
+                {% if source.url %}
+                    <a href="{{ source.url }}" target="_blank" rel="noreferrer">
+                        Первичный источник
+                        {% icon 'external' 13 %}
+                    </a>
+                {% endif %}
+            </article>
+        {% endfor %}
+    </div>
+</section>
+<div class="section-heading">
+    <div>
+        <h2>Разбор существующих решений</h2>
+        <p>13 прямых и смежных аналогов. Публичная документация, проверка 12.11.2026.</p>
+    </div>
+    <form method="get" data-auto-submit>
+        <input type="hidden" name="page" value="sources" />
+        <select name="category" aria-label="Фильтр аналогов">
+            <option value="all">Все классы решений</option>
+            <option value="visibility" {% if category == 'visibility' %}selected{% endif %}>
+                Видимость и прогноз
+            </option>
+            <option value="port" {% if category == 'port' %}selected{% endif %}>Портовые системы</option>
+            <option value="simulation" {% if category == 'simulation' %}selected{% endif %}>Симуляторы</option>
+            <option value="other" {% if category == 'other' %}selected{% endif %}>Другие</option>
+        </select>
+        <noscript><button type="submit">Показать</button></noscript>
+    </form>
+</div>
+<div class="analogue-grid">
+    {% for a in research %}
+        <article class="panel analogue-card">
+            <div>
+                <span class="analogue-monogram">{{ a.name|slice:':2'|upper }}</span>
+                <a
+                    href="{{ a.sources.0 }}"
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="Официальный источник {{ a.name }}"
+                >
+                    {% icon 'external' 17 %}
+                </a>
+            </div>
+            <h3>{{ a.name }}</h3>
+            <ul>
+                {% for fact in a.documented|slice:':3' %}
+                    <li>{{ fact }}</li>
+                {% endfor %}
+            </ul>
+            <p>{{ a.lesson }}</p>
+            <details>
+                <summary>Доступ и границы проверки</summary>
+                <p>{{ a.access }}</p>
+                <p>Не установлено: {{ a.unknown|join:'; ' }}</p>
+                {% for url in a.sources %}
+                    <a href="{{ url }}" target="_blank" rel="noreferrer">
+                        {{ url|host }}
+                        {% icon 'external' 11 %}
+                    </a>
+                {% endfor %}
+            </details>
+        </article>
+    {% endfor %}
+</div>
+<div class="notice">
+    {% icon 'compass' 21 %}
+    <div>
+        <strong>Наш фокус — проверяемый процесс на конкретном направлении</strong>
+        <p>
+            ETA, объяснение задержек, документы и симуляция уже существуют у аналогов. Мы не
+            заявляем мировую уникальность или превосходство точности: показываем исполнимость
+            стыковки, общую ёмкость и последствия выбранного действия в воспроизводимой модели.
+        </p>
+    </div>
+</div>

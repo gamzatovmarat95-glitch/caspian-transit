@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <title>Caspian Transit</title>
+  <rect width="64" height="64" rx="14" fill="#123344"/>
+  <path d="M15 18h10v12H15z" fill="#F3F2E8"/>
+  <path d="M18 12h4v6h-4zM29 20h10v10H29zM43 18h9v9l-9 3z" fill="#DCA074"/>
+  <path d="M9 34h32l14-7-7 16H24c-7 0-11-3-15-9z" fill="#F3F2E8"/>
+  <path d="M13 51c5 0 5-4 10-4s5 4 10 4 5-4 10-4 5 4 8 4" stroke="#DCA074" stroke-width="4" stroke-linecap="round"/>
+</svg>

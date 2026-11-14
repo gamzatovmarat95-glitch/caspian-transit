@@ -1,0 +1,341 @@
+{% load transit_tags %}
+<section class="panel map-panel">
+    <div class="panel-header">
+        <div>
+            <h2>
+                {% if page == 'scenarios' %}
+                    Состояние сети
+                {% else %}
+                    Коридоры доставки
+                {% endif %}
+            </h2>
+            <span>
+                {% if page == 'scenarios' %}
+                    {{ s.scenario }}
+                {% else %}
+                    Демонстрационный сценарий · Волгоград → Тегеран
+                {% endif %}
+            </span>
+        </div>
+        {% if page == 'scenarios' %}
+            <span class="badge neutral">
+                <i></i>
+                {{ risk }} грузов с риском
+            </span>
+        {% else %}
+            <span class="mini-label">
+                {% icon 'layers' 14 %}
+                Россия — Иран
+            </span>
+        {% endif %}
+    </div>
+    <div class="weather-view-switch" role="group" aria-label="Назначение карты">
+        <button type="button" data-weather-view="operations" aria-pressed="true">{% icon 'layers' 15 %} Коридоры доставки</button>
+        <button type="button" data-weather-view="windy" aria-pressed="false">{% icon 'wind' 15 %} Погода</button>
+        <button type="button" data-weather-view="marine" aria-pressed="false">{% icon 'radio' 15 %} Суда</button>
+    </div>
+        <div class="map-route-dock" id="route-selection-bar">
+            <div class="map-route-heading">
+                <span>3 ВАРИАНТА КОРИДОРА</span>
+                <small>Волгоград → Тегеран</small>
+            </div>
+            <form class="map-route-tabs" method="get">
+                <input type="hidden" name="page" value="{{ page }}" />
+                <input type="hidden" name="cargo" value="{{ cargo.id }}" />
+                {% for r in s.routes %}
+                    <button
+                        type="submit"
+                        name="route"
+                        value="{{ r.id }}"
+                        class="{% if r.id == chosen.routeId %}selected{% endif %}"
+                        {% if r.id == chosen.routeId %}aria-current="true"{% endif %}
+                    >
+                        <span class="route-number">0{{ forloop.counter }}</span>
+                        <strong>{{ r.name }}</strong>
+                    </button>
+                {% endfor %}
+            </form>
+        </div>
+    <div class="map-canvas enhanced-map" id="corridor-map">
+        <div class="windy-view marine-view" id="marine-view" hidden>
+            <div class="windy-toolbar"><span>MarineTraffic · карта поставщика</span><a href="https://www.marinetraffic.com/en/ais/home/centerx:51.2/centery:41.4/zoom:7" target="_blank" rel="noopener noreferrer">Открыть отдельно {% icon 'external' 13 %}</a></div>
+            <iframe id="marine-frame" title="Внешняя карта судов MarineTraffic на Каспии" referrerpolicy="origin" allow="fullscreen" loading="lazy"></iframe>
+        </div>
+        <div class="windy-view" id="windy-view" hidden>
+            <div class="windy-toolbar">
+                <label>Слой <select id="windy-overlay"><option value="wind">Ветер</option><option value="gust">Порывы</option><option value="rain">Осадки</option><option value="clouds">Облачность</option><option value="temp">Температура</option></select></label>
+                <a href="https://www.windy.com/?41.4,51.2,6" target="_blank" rel="noopener noreferrer">Открыть Windy {% icon 'external' 13 %}</a>
+            </div>
+            <iframe id="windy-frame" title="Прогноз Windy для Каспийского моря" referrerpolicy="origin" allow="fullscreen" loading="lazy"></iframe>
+        </div>
+        <div class="schematic-layer" id="schematic-map">
+            <svg
+                id="route-svg"
+                viewBox="0 -60 900 800"
+                role="group"
+                aria-label="Схема каспийских маршрутов"
+            >
+                <defs>
+                    <filter id="pin-shadow">
+                        <feDropShadow
+                            dx="0"
+                            dy="2"
+                            stdDeviation="4"
+                            flood-color="#234756"
+                            flood-opacity=".18"
+                        />
+                    </filter>
+                    <pattern id="map-grid" width="56" height="56" patternUnits="userSpaceOnUse">
+                        <path
+                            d="M56 0H0V56"
+                            fill="none"
+                            stroke="#9dbbcc"
+                            stroke-width=".6"
+                            opacity=".4"
+                        />
+                    </pattern>
+                </defs>
+                <rect x="-1000" y="-1000" width="3000" height="3000" fill="#d4e4eb" />
+                {% for f in geographic_features %}
+                    <path
+                        d="{{ f.path }}"
+                        fill="{% if f.kind == 'sea' %}#c5dce7{% else %}#f1f1e9{% endif %}"
+                        stroke="{% if f.kind == 'sea' %}#9dbfcc{% else %}#c4d2d5{% endif %}"
+                        stroke-width="{% if f.kind == 'sea' %}1.3{% else %}1{% endif %}"
+                    />
+                {% endfor %}
+                <rect x="-1000" y="-1000" width="3000" height="3000" fill="url(#map-grid)" />
+                <g class="country-labels">
+                    <text x="120" y="170">РОССИЯ</text>
+                    <text x="700" y="170">КАЗАХСТАН</text>
+                    <text x="750" y="450">ТУРКМЕНИСТАН</text>
+                    <text x="220" y="476">АЗЕРБАЙДЖАН</text>
+                    <text x="520" y="658">ИРАН</text>
+                </g>
+                <text x="545" y="330" class="sea-label" transform="rotate(-8,545,330)">
+                    Каспийское
+                </text>
+                <text x="572" y="358" class="sea-label" transform="rotate(-8,572,358)">море</text>
+                <g id="land-route-layer">
+                    {% for segment in map_land_segments %}
+                        <path d="{{ segment.path }}" fill="none" stroke="#566c7a"
+                              stroke-width="{% if segment.selected %}2.5{% else %}1.7{% endif %}"
+                              stroke-opacity="{% if segment.selected %}.85{% else %}.4{% endif %}"
+                              stroke-dasharray="{% if segment.mode == 'rail' %}9 4 2 4{% else %}5 5{% endif %}"
+                              stroke-linecap="round" stroke-linejoin="round"
+                              data-route-ids="{{ segment.routeIds|join:' ' }}">
+                            <title>{% if segment.mode == 'rail' %}Ж/д{% else %}Авто{% endif %} · {{ segment.name }} · обзорная схема</title>
+                        </path>
+                    {% endfor %}
+                </g>
+                {% for approach in map_approaches %}
+                    <path d="{{ approach.path }}" fill="none" stroke="#7d8793" stroke-width="2" stroke-dasharray="3 5"><title>Условная связь портового узла с морским коридором, не проверенный фарватер</title></path>
+                {% endfor %}
+                {% for r in map_routes %}
+                    {% if r.id != chosen.routeId %}
+                        <a
+                            class="map-route"
+                            href="/?page={{ page }}&amp;cargo={{ cargo.id }}&amp;route={{ r.id }}#decision"
+                            aria-label="Выбрать маршрут {{ r.name }}"
+                        >
+                            <path d="{{ r.path }}" fill="none" stroke="transparent" stroke-width="24" />
+                            <path
+                                d="{{ r.path }}"
+                                fill="none"
+                                stroke="{{ r.color }}"
+                                stroke-width="3"
+                                opacity=".85"
+                            />
+                        </a>
+                    {% endif %}
+                {% endfor %}
+                {% for r in map_routes %}
+                    {% if r.id == chosen.routeId %}
+                        <path
+                            d="{{ r.path }}"
+                            fill="none"
+                            stroke="{{ r.color }}"
+                            stroke-width="5"
+                            class="active-sea-route"
+                        />
+                    {% endif %}
+                {% endfor %}
+                <g id="live-wind-layer"></g>
+                <g id="live-vessel-layer"></g>
+                <g class="city-label">
+                    <circle cx="161" cy="28" r="6" fill="#355f75" stroke="white" stroke-width="3" />
+                    <text x="174" y="32">Волгоград</text>
+                    <circle
+                        cx="604"
+                        cy="647"
+                        r="6"
+                        fill="#355f75"
+                        stroke="white"
+                        stroke-width="3"
+                    />
+                    <text x="618" y="652">Тегеран</text>
+                </g>
+                {% for p in map_ports %}
+                    <a
+                        href="/?page=scenarios&amp;port={{ p.id }}&amp;cargo={{ cargo.id }}"
+                        aria-label="Порт {{ p.name }}, очередь {{ p.queueUnits }}"
+                    >
+                        <g transform="translate({{ p.x|stringformat:'f' }},{{ p.y|stringformat:'f' }})">
+                            <circle r="17" fill="white" filter="url(#pin-shadow)" />
+                            <circle
+                                r="7"
+                                fill="{% if p.closureStart != None %}#bd7346{% else %}#377e85{% endif %}"
+                            />
+                            <rect
+                                x="{% if p.right %}23{% else %}-166{% endif %}"
+                                y="-18"
+                                width="144"
+                                height="39"
+                                rx="3"
+                                fill="white"
+                                opacity=".96"
+                                filter="url(#pin-shadow)"
+                            />
+                            <text
+                                x="{% if p.right %}34{% else %}-155{% endif %}"
+                                y="-2"
+                                class="port-label"
+                            >
+                                {{ p.name }}
+                            </text>
+                            <text
+                                x="{% if p.right %}34{% else %}-155{% endif %}"
+                                y="12"
+                                class="port-meta"
+                            >
+                                Модель: {{ p.queueUnits }} ед. · {{ p.windMs|num }} м/с
+                            </text>
+                        </g>
+                    </a>
+                {% endfor %}
+            </svg>
+            <div class="map-compass">
+                <span>С</span>
+                {% icon 'compass' 20 %}
+            </div>
+            <div class="map-foot">
+                <span>Обзорные морские коридоры</span>
+                <span>Natural Earth · схема, не навигация</span>
+            </div>
+        </div>
+        <div
+            class="yandex-layer"
+            id="yandex-layer"
+            aria-label="Яндекс Карты с каспийскими маршрутами"
+            hidden
+        ></div>
+        <div class="map-provider-switch" role="group" aria-label="Источник карты">
+            <button type="button" data-map-provider="scheme" aria-pressed="true">
+                {% icon 'layers' 14 %}
+                Схема
+            </button>
+            <button
+                type="button"
+                data-map-provider="yandex"
+                aria-pressed="false"
+                aria-label="Яндекс Карты"
+            >
+                <span class="yandex-letter" aria-hidden="true">Я</span>
+                Яндекс
+            </button>
+            <button type="button" id="map-settings-button" aria-label="Настройки карты">
+                {% icon 'settings' 14 %}
+            </button>
+        </div>
+        <div class="map-network-label">
+            <span class="signal-dot"></span>
+            {{ s.ports|length }} портовых узла
+        </div>
+        <div class="live-wind-legend" id="live-wind-legend" hidden>
+            <div><strong>ВЕТЕР · м/с</strong><span id="live-map-weather-time">Ожидаем данные</span></div>
+            <div class="live-wind-scale" aria-hidden="true"></div>
+            <div class="live-wind-ticks"><span>0</span><span>5</span><span>10</span><span>15</span><span>20+</span></div>
+            <small>Стрелки показывают, куда дует ветер</small>
+        </div>
+        <div class="live-map-summary" id="live-map-summary" role="status">Наблюдения — во вкладках «Суда» и «Погода»</div>
+        <div class="optimized-map-note" id="optimized-map-note" hidden></div>
+        <div class="map-error" id="map-error" role="status" hidden></div>
+        <div class="map-loading" id="map-loading" role="status" hidden>
+            Подключаем Яндекс Карты…
+        </div>
+        <div class="map-zoom-controls">
+            <button type="button" data-map-zoom="1" aria-label="Приблизить карту">
+                {% icon 'plus' 15 %}
+            </button>
+            <button type="button" data-map-zoom="-1" aria-label="Отдалить карту">
+                {% icon 'minus' 15 %}
+            </button>
+            <button type="button" data-map-zoom="0" aria-label="Сбросить масштаб">
+                {% icon 'expand' 15 %}
+            </button>
+        </div>
+        <span class="map-geometry-note">
+            Обзорная геометрия · не навигационная карта
+        </span>
+    </div>
+    <div class="route-explainer">
+        <div class="route-map-legend" aria-label="Обозначения линий">
+            <span><i class="route-key route-blue"></i>Оля → Энзели</span>
+            <span><i class="route-key route-purple"></i>Махачкала → Амирабад</span>
+            <span><i class="route-key route-orange"></i>Оля → Амирабад</span>
+            <span><i class="route-key calculated"></i>Малиновая толстая — рекомендация, ещё не принятие</span>
+            <span><i class="route-key alternative"></i>Серый пунктир — условный подход к порту</span>
+            <span><i class="route-key land-road"></i>Авто · пунктир</span>
+            <span><i class="route-key land-rail"></i>Ж/д · штрихпунктир</span>
+        </div>
+        <strong id="map-route-description">Просматриваемый коридор: {{ map_selected_route.name }}</strong>
+        <p id="map-route-chain" class="route-chain">{{ map_selected_route.chain }}</p>
+        <p>Цветные сплошные линии показывают морские коридоры. Серый пунктир обозначает автоэтапы, штрихпунктир — железнодорожный подвоз. Наземные участки показаны обзорной схемой по узловым точкам. Выбранная цепочка выделена сильнее. Расчёт сравнивает три заданных коридора и их отправления. План фиксируется отдельно.</p>
+        <details><summary>Почему выбраны эти города и как выбирается коридор</summary>
+            <p>Волгоград и Тегеран — отправитель и получатель в текущем демо-сценарии. Оля и Махачкала — заданные порты отправления; Энзели и Амирабад — порты назначения. Поэтому выделены именно эти узлы, а не все города Каспия. Оля — отдельный порт в Астраханской области; порт Астрахань в текущую модель не добавлен.</p>
+            <p>Сравниваются три заранее заданные цепочки: Оля → Энзели, Махачкала → Амирабад и Оля → Амирабад. Расчёт ниже перебирает их отправления, исключает варианты по срокам подвоза, очередям, вместимости и прогнозу ветра. Затем выбирает доставку в срок по выбранному критерию; если все опаздывают — сначала наименьшее опоздание.</p>
+            <p>Алгоритм выбирает коридор и отправление. Новую морскую траекторию вокруг непогоды он пока не строит. Обзорные линии проверены по имеющейся береговой геометрии Natural Earth; это не проверка глубин и фарватеров. Серые пунктирные связи у портов условные. Координаты узлов приблизительные, расписания и тарифы сценарные; подтверждённых треков рейсов и данных перевозчиков в этих линиях нет.</p>
+        </details>
+    </div>
+</section>
+<p class="windy-provider-note" id="windy-provider-note" hidden>Windy · прогноз погоды. Время, модель и шкала показаны в виджете поставщика. Возврат к маршрутам выключает виджет. Числовой прогноз для автоматической рекомендации выбирается отдельно в математическом расчёте ниже.</p>
+<p class="windy-provider-note" id="marine-provider-note" hidden>Внешний виджет MarineTraffic загружается отдельно от API. Если поставщик не разрешил встраивание, откройте карту по ссылке над ней. Виджет не передаёт позиции судов в наш расчёт.</p>
+{% include 'transit/live-data.html' %}
+{% include 'transit/optimization.html' %}
+{{ map_data|json_script:'map-data' }}
+<dialog class="map-settings-dialog" id="map-settings-dialog" aria-labelledby="map-settings-title">
+    <button
+        type="button"
+        class="modal-close icon-button"
+        data-close="map-settings-dialog"
+        aria-label="Закрыть настройки"
+    >
+        {% icon 'close' %}
+    </button>
+    <div class="map-settings-icon">{% icon 'sliders' 24 %}</div>
+    <h2 id="map-settings-title">Подключить Яндекс Карты</h2>
+    <p>
+        Схема работает без интернета. Яндекс требует собственный ключ JavaScript API с разрешённым
+        localhost.
+    </p>
+    <form id="map-key-form">
+        <label>
+            Ключ для этого браузера
+            <input
+                type="password"
+                id="map-key-input"
+                autocomplete="off"
+                minlength="16"
+                maxlength="160"
+            />
+        </label>
+        <p id="map-key-status" role="status"></p>
+        <button class="button primary" type="submit">Подключить Яндекс Карты</button>
+        <button class="button secondary" type="button" id="map-reset-key">
+            Удалить ключ из браузера
+        </button>
+    </form>
+    <p>
+        Сохранённый в локальном приложении ключ имеет приоритет. Источник карт и атрибуция: Яндекс.
+    </p>
+</dialog>

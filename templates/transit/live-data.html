@@ -1,0 +1,23 @@
+{% load transit_tags %}
+<section class="panel live-panel" id="live-panel" aria-labelledby="live-title">
+    <div class="panel-header"><div><h2 id="live-title">{% if full_vessels %}Наблюдения AIS и погода{% else %}Погода в узлах коридора{% endif %}</h2><span>Внешние данные · время каждого наблюдения показано отдельно</span></div>
+        <button type="button" class="button secondary compact" id="live-refresh">{% icon 'refresh' 15 %} Обновить</button></div>
+    <div class="live-body">
+        {% if full_vessels %}
+        <div class="live-source-controls" role="group" aria-label="Источник судов AIS">
+            <span>Источник судов</span><button type="button" data-ais-provider="openwaters" aria-pressed="true">Open Waters</button><button type="button" data-ais-provider="marinetraffic" aria-pressed="false">MarineTraffic API</button>
+            <a href="https://www.marinetraffic.com/en/ais/home/centerx:51.2/centery:41.4/zoom:7" target="_blank" rel="noopener noreferrer">Открыть MarineTraffic {% icon 'external' 13 %}</a>
+        </div>
+        <p id="live-ais-status" role="status">Запрашиваем суда Каспия…</p>
+        {% endif %}
+        <p id="live-weather-status" role="status">Запрашиваем текущую скорость ветра…</p>
+        <div class="live-weather-grid" id="live-weather-readings"></div>
+        {% if full_vessels %}
+        <div id="live-vessel-list" data-full="true"></div>
+        <p class="live-attribution" id="live-ais-attribution"></p>
+        {% endif %}
+        <p class="live-disclaimer">Анимация и направление ветра доступны во вкладке «Погода». Карточки показывают текущие модельные условия Open-Meteo в семи точках; это не показания портовых датчиков. Для математического расчёта отдельно запрашивается прогноз на весь морской этап. AIS — последнее принятое положение судна; серые отметки старше 30 минут. Эти данные сами по себе не подтверждают рейс или закрытие порта.</p>
+        <div class="live-links"><a href="/vessels">Отдельный раздел наблюдений AIS</a>{% if full_vessels %}<a href="https://openwaters.io/ais/" target="_blank" rel="noopener noreferrer">Источник AIS</a>{% endif %}<a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Погода: Open-Meteo · CC BY 4.0</a></div>
+    </div>
+</section>
+{{ live_config|json_script:'live-config' }}

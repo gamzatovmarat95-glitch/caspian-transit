@@ -1,0 +1,18 @@
+{% extends 'transit/operations-base.html' %}{% load static %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/caspian.css' %}">
+<link rel="stylesheet" href="{% static 'css/maritime.css' %}">
+<link rel="stylesheet" href="{% static 'css/legacy-bridge.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-data.css' %}">
+<link rel="stylesheet" href="{% static 'css/map-atmosphere.css' %}">
+<script src="{% static 'js/workspace.js' %}" defer></script>
+<script src="{% static 'js/live-data.js' %}" defer></script>
+<script src="{% static 'js/windy-view.js' %}" defer></script>
+<link rel="stylesheet" href="{% static 'css/optimization.css' %}">
+<script src="{% static 'js/optimization.js' %}" defer></script>
+{% endblock %}
+{% block content %}
+<h1>Суда Каспия и текущий ветер</h1>
+<p>Внешний слой AIS и погода в четырёх портах и трёх точках моря. Наблюдения AIS за 24 часа: свежие отметки цветные, старые — серые. Покрытие зависит от приёмников.</p>
+{% include 'transit/map.html' %}
+{% endblock %}
